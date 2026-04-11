@@ -47,15 +47,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+        golf: {
+          green: "hsl(var(--golf-green))",
+          "green-light": "hsl(var(--golf-green-light))",
+          fairway: "hsl(var(--golf-fairway))",
+          gold: "hsl(var(--golf-gold))",
+          "gold-light": "hsl(var(--golf-gold-light))",
+          cream: "hsl(var(--golf-cream))",
+          sand: "hsl(var(--golf-sand))",
         },
       },
       borderRadius: {
