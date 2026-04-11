@@ -1,6 +1,6 @@
-// Predicts yardages based on loft angles using a known calibration point.
-// Uses the empirical relationship: distance ≈ k / tan(loft_radians)
-// This models the physics of ball flight vs club loft.
+// Predicts yardages using Personal Distance Factor (PDF).
+// PDF = Baseline Yardage / (90 - Baseline Club Loft)
+// Predicted Distance = (90 - Club Loft) × PDF
 
 export interface Club {
   id: string;
@@ -21,13 +21,11 @@ export function predictYardages(
   const calClub = clubs.find((c) => c.id === calibration.clubId);
   if (!calClub) return clubs;
 
-  const calLoftRad = (calClub.loft * Math.PI) / 180;
-  // Solve for k: yardage = k / tan(loft) => k = yardage * tan(loft)
-  const k = calibration.yardage * Math.tan(calLoftRad);
+  // Personal Distance Factor
+  const pdf = calibration.yardage / (90 - calClub.loft);
 
   return clubs.map((club) => {
-    const loftRad = (club.loft * Math.PI) / 180;
-    const predicted = Math.round(k / Math.tan(loftRad));
+    const predicted = Math.round((90 - club.loft) * pdf);
     return { ...club, predictedYardage: predicted };
   });
 }
