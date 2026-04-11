@@ -10,6 +10,12 @@ interface Props {
 }
 
 export function CalibrationInput({ clubs, calibration, onChange }: Props) {
+  const calClub = clubs.find((c) => c.id === calibration?.clubId);
+  const pdf =
+    calClub && calibration?.yardage
+      ? (calibration.yardage / (90 - calClub.loft)).toFixed(2)
+      : null;
+
   return (
     <div className="rounded-xl border border-golf-gold/30 bg-golf-cream p-5 space-y-4">
       <div className="flex items-center gap-2 text-foreground font-semibold">
@@ -17,7 +23,7 @@ export function CalibrationInput({ clubs, calibration, onChange }: Props) {
         <span>Calibrate Your Distances</span>
       </div>
       <p className="text-sm text-muted-foreground">
-        Select a club you know your distance for, and enter the yardage. We'll predict the rest.
+        Select a club you know your distance for, and enter the yardage. We'll calculate your Personal Distance Factor and predict the rest.
       </p>
       <div className="grid grid-cols-2 gap-3">
         <Select
@@ -32,7 +38,7 @@ export function CalibrationInput({ clubs, calibration, onChange }: Props) {
           <SelectContent>
             {clubs.map((c) => (
               <SelectItem key={c.id} value={c.id}>
-                {c.name || `${c.loft}°`}
+                {c.name || `${c.loft}°`} ({c.loft}°)
               </SelectItem>
             ))}
           </SelectContent>
@@ -50,6 +56,14 @@ export function CalibrationInput({ clubs, calibration, onChange }: Props) {
           className="bg-card border-border"
         />
       </div>
+      {pdf && (
+        <div className="text-xs text-muted-foreground bg-card rounded-lg px-3 py-2 border border-border">
+          Your Personal Distance Factor: <span className="font-semibold text-foreground">{pdf}</span>
+          <span className="ml-1 opacity-70">
+            ({calibration!.yardage} ÷ (90 − {calClub!.loft}°))
+          </span>
+        </div>
+      )}
     </div>
   );
 }
