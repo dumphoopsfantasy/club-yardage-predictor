@@ -1,18 +1,22 @@
 // Real golf club catalog with manufacturer loft specs
+// Sources: manufacturer websites, Golf Digest, MyGolfSpy equipment databases
 
 export interface ClubModel {
   brand: string;
   model: string;
   year: number;
-  category: "Players" | "Players Distance" | "Game Improvement" | "Super Game Improvement";
+  category: "Players" | "Players Distance" | "Game Improvement" | "Super Game Improvement" | "Wedge Set" | "Hybrid/Fairway";
   clubs: { name: string; loft: number }[];
 }
 
 export const CLUB_CATALOG: ClubModel[] = [
-  // === TITLEIST ===
+
+  // ===========================
+  // TITLEIST
+  // ===========================
   {
     brand: "Titleist",
-    model: "T100",
+    model: "T100 (2024)",
     year: 2024,
     category: "Players",
     clubs: [
@@ -28,7 +32,23 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Titleist",
-    model: "T150",
+    model: "T100S (2024)",
+    year: 2024,
+    category: "Players",
+    clubs: [
+      { name: "3 Iron", loft: 19 },
+      { name: "4 Iron", loft: 22 },
+      { name: "5 Iron", loft: 25 },
+      { name: "6 Iron", loft: 28 },
+      { name: "7 Iron", loft: 32 },
+      { name: "8 Iron", loft: 36 },
+      { name: "9 Iron", loft: 40 },
+      { name: "PW", loft: 44 },
+    ],
+  },
+  {
+    brand: "Titleist",
+    model: "T150 (2024)",
     year: 2024,
     category: "Players Distance",
     clubs: [
@@ -43,7 +63,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Titleist",
-    model: "T200",
+    model: "T200 (2024)",
     year: 2024,
     category: "Players Distance",
     clubs: [
@@ -58,7 +78,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Titleist",
-    model: "T350",
+    model: "T350 (2024)",
     year: 2024,
     category: "Game Improvement",
     clubs: [
@@ -71,11 +91,62 @@ export const CLUB_CATALOG: ClubModel[] = [
       { name: "W", loft: 47 },
     ],
   },
+  {
+    brand: "Titleist",
+    model: "AP1 (2016)",
+    year: 2016,
+    category: "Game Improvement",
+    clubs: [
+      { name: "4 Iron", loft: 23 },
+      { name: "5 Iron", loft: 26 },
+      { name: "6 Iron", loft: 29 },
+      { name: "7 Iron", loft: 32 },
+      { name: "8 Iron", loft: 36 },
+      { name: "9 Iron", loft: 40 },
+      { name: "PW", loft: 44 },
+    ],
+  },
+  {
+    brand: "Titleist",
+    model: "AP3 (2018)",
+    year: 2018,
+    category: "Players Distance",
+    clubs: [
+      { name: "3 Iron", loft: 19 },
+      { name: "4 Iron", loft: 22 },
+      { name: "5 Iron", loft: 25 },
+      { name: "6 Iron", loft: 28 },
+      { name: "7 Iron", loft: 31 },
+      { name: "8 Iron", loft: 35 },
+      { name: "9 Iron", loft: 39 },
+      { name: "PW", loft: 43 },
+      { name: "W", loft: 48 },
+    ],
+  },
+  {
+    brand: "Titleist",
+    model: "Vokey SM10 Wedges",
+    year: 2024,
+    category: "Wedge Set",
+    clubs: [
+      { name: "46° Vokey PW", loft: 46 },
+      { name: "48° Vokey GW", loft: 48 },
+      { name: "50° Vokey AW", loft: 50 },
+      { name: "52° Vokey GW", loft: 52 },
+      { name: "54° Vokey SW", loft: 54 },
+      { name: "56° Vokey SW", loft: 56 },
+      { name: "58° Vokey LW", loft: 58 },
+      { name: "60° Vokey LW", loft: 60 },
+      { name: "62° Vokey LW", loft: 62 },
+    ],
+  },
 
-  // === TAYLORMADE ===
+  // ===========================
+  // TAYLORMADE
+  // ===========================
   {
     brand: "TaylorMade",
-    model: "P770",
+    model: "P770 (2024)",
     year: 2024,
     category: "Players Distance",
     clubs: [
@@ -91,7 +162,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "TaylorMade",
-    model: "P790",
+    model: "P790 (2024)",
     year: 2024,
     category: "Players Distance",
     clubs: [
@@ -107,7 +178,39 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "TaylorMade",
-    model: "Qi35",
+    model: "P7MC (2024)",
+    year: 2024,
+    category: "Players",
+    clubs: [
+      { name: "3 Iron", loft: 21 },
+      { name: "4 Iron", loft: 24 },
+      { name: "5 Iron", loft: 27 },
+      { name: "6 Iron", loft: 31 },
+      { name: "7 Iron", loft: 35 },
+      { name: "8 Iron", loft: 39 },
+      { name: "9 Iron", loft: 43 },
+      { name: "PW", loft: 47 },
+    ],
+  },
+  {
+    brand: "TaylorMade",
+    model: "P7MB (2024)",
+    year: 2024,
+    category: "Players",
+    clubs: [
+      { name: "3 Iron", loft: 21 },
+      { name: "4 Iron", loft: 24 },
+      { name: "5 Iron", loft: 27 },
+      { name: "6 Iron", loft: 31 },
+      { name: "7 Iron", loft: 35 },
+      { name: "8 Iron", loft: 39 },
+      { name: "9 Iron", loft: 43 },
+      { name: "PW", loft: 47 },
+    ],
+  },
+  {
+    brand: "TaylorMade",
+    model: "Qi35 (2025)",
     year: 2025,
     category: "Game Improvement",
     clubs: [
@@ -124,7 +227,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "TaylorMade",
-    model: "Qi35 Max",
+    model: "Qi35 Max (2025)",
     year: 2025,
     category: "Super Game Improvement",
     clubs: [
@@ -140,25 +243,76 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "TaylorMade",
-    model: "P7MC",
-    year: 2024,
-    category: "Players",
+    model: "Stealth 2 (2023)",
+    year: 2023,
+    category: "Game Improvement",
     clubs: [
-      { name: "3 Iron", loft: 21 },
-      { name: "4 Iron", loft: 24 },
-      { name: "5 Iron", loft: 27 },
-      { name: "6 Iron", loft: 31 },
-      { name: "7 Iron", loft: 35 },
-      { name: "8 Iron", loft: 39 },
-      { name: "9 Iron", loft: 43 },
-      { name: "PW", loft: 47 },
+      { name: "4 Iron", loft: 19 },
+      { name: "5 Iron", loft: 21.5 },
+      { name: "6 Iron", loft: 25 },
+      { name: "7 Iron", loft: 28.5 },
+      { name: "8 Iron", loft: 33 },
+      { name: "9 Iron", loft: 38 },
+      { name: "PW", loft: 43 },
+      { name: "AW", loft: 49 },
+      { name: "SW", loft: 54 },
+    ],
+  },
+  {
+    brand: "TaylorMade",
+    model: "SIM2 Max (2021)",
+    year: 2021,
+    category: "Game Improvement",
+    clubs: [
+      { name: "4 Iron", loft: 19 },
+      { name: "5 Iron", loft: 21.5 },
+      { name: "6 Iron", loft: 25 },
+      { name: "7 Iron", loft: 28.5 },
+      { name: "8 Iron", loft: 33 },
+      { name: "9 Iron", loft: 38 },
+      { name: "PW", loft: 43 },
+      { name: "AW", loft: 49 },
+      { name: "SW", loft: 54 },
+    ],
+  },
+  {
+    brand: "TaylorMade",
+    model: "MG4 Wedges",
+    year: 2024,
+    category: "Wedge Set",
+    clubs: [
+      { name: "46° MG4 PW", loft: 46 },
+      { name: "48° MG4", loft: 48 },
+      { name: "50° MG4", loft: 50 },
+      { name: "52° MG4", loft: 52 },
+      { name: "54° MG4 SW", loft: 54 },
+      { name: "56° MG4 SW", loft: 56 },
+      { name: "58° MG4 LW", loft: 58 },
+      { name: "60° MG4 LW", loft: 60 },
+    ],
+  },
+  {
+    brand: "TaylorMade",
+    model: "Qi35 Hybrids & Fairways (2025)",
+    year: 2025,
+    category: "Hybrid/Fairway",
+    clubs: [
+      { name: "3 Wood", loft: 15 },
+      { name: "5 Wood", loft: 19 },
+      { name: "7 Wood", loft: 22 },
+      { name: "3 Hybrid", loft: 19.5 },
+      { name: "4 Hybrid", loft: 22 },
+      { name: "5 Hybrid", loft: 25 },
+      { name: "6 Hybrid", loft: 28 },
     ],
   },
 
-  // === CALLAWAY ===
+  // ===========================
+  // CALLAWAY
+  // ===========================
   {
     brand: "Callaway",
-    model: "Apex Pro",
+    model: "Apex Pro (2024)",
     year: 2024,
     category: "Players",
     clubs: [
@@ -174,7 +328,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Callaway",
-    model: "Apex",
+    model: "Apex (2024)",
     year: 2024,
     category: "Players Distance",
     clubs: [
@@ -190,7 +344,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Callaway",
-    model: "Paradym Ai Smoke",
+    model: "Paradym Ai Smoke (2024)",
     year: 2024,
     category: "Game Improvement",
     clubs: [
@@ -207,7 +361,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Callaway",
-    model: "Paradym Ai Smoke Max",
+    model: "Paradym Ai Smoke Max (2024)",
     year: 2024,
     category: "Super Game Improvement",
     clubs: [
@@ -223,7 +377,23 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Callaway",
-    model: "Mavrik",
+    model: "Big Bertha (2023)",
+    year: 2023,
+    category: "Super Game Improvement",
+    clubs: [
+      { name: "5 Iron", loft: 22 },
+      { name: "6 Iron", loft: 25 },
+      { name: "7 Iron", loft: 28 },
+      { name: "8 Iron", loft: 32 },
+      { name: "9 Iron", loft: 37 },
+      { name: "PW", loft: 42 },
+      { name: "AW", loft: 47 },
+      { name: "SW", loft: 52 },
+    ],
+  },
+  {
+    brand: "Callaway",
+    model: "Mavrik (2020)",
     year: 2020,
     category: "Game Improvement",
     clubs: [
@@ -239,11 +409,45 @@ export const CLUB_CATALOG: ClubModel[] = [
       { name: "SW", loft: 56 },
     ],
   },
+  {
+    brand: "Callaway",
+    model: "Jaws Raw Wedges",
+    year: 2024,
+    category: "Wedge Set",
+    clubs: [
+      { name: "46° Jaws PW", loft: 46 },
+      { name: "48° Jaws", loft: 48 },
+      { name: "50° Jaws AW", loft: 50 },
+      { name: "52° Jaws GW", loft: 52 },
+      { name: "54° Jaws SW", loft: 54 },
+      { name: "56° Jaws SW", loft: 56 },
+      { name: "58° Jaws LW", loft: 58 },
+      { name: "60° Jaws LW", loft: 60 },
+    ],
+  },
+  {
+    brand: "Callaway",
+    model: "Paradym Ai Smoke Hybrids & Fairways (2024)",
+    year: 2024,
+    category: "Hybrid/Fairway",
+    clubs: [
+      { name: "3 Wood", loft: 15 },
+      { name: "5 Wood", loft: 18 },
+      { name: "7 Wood", loft: 21 },
+      { name: "2 Hybrid", loft: 17 },
+      { name: "3 Hybrid", loft: 19 },
+      { name: "4 Hybrid", loft: 22 },
+      { name: "5 Hybrid", loft: 25 },
+      { name: "6 Hybrid", loft: 28 },
+    ],
+  },
 
-  // === PING ===
+  // ===========================
+  // PING
+  // ===========================
   {
     brand: "Ping",
-    model: "i230",
+    model: "i230 (2023)",
     year: 2023,
     category: "Players",
     clubs: [
@@ -260,7 +464,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Ping",
-    model: "i210",
+    model: "i210 (2018)",
     year: 2018,
     category: "Players",
     clubs: [
@@ -277,7 +481,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Ping",
-    model: "G430",
+    model: "G430 (2023)",
     year: 2023,
     category: "Game Improvement",
     clubs: [
@@ -294,7 +498,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Ping",
-    model: "G430 Max",
+    model: "G430 Max (2023)",
     year: 2023,
     category: "Super Game Improvement",
     clubs: [
@@ -310,7 +514,24 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Ping",
-    model: "Zing",
+    model: "G425 (2021)",
+    year: 2021,
+    category: "Game Improvement",
+    clubs: [
+      { name: "4 Iron", loft: 21 },
+      { name: "5 Iron", loft: 24 },
+      { name: "6 Iron", loft: 27 },
+      { name: "7 Iron", loft: 31 },
+      { name: "8 Iron", loft: 35.5 },
+      { name: "9 Iron", loft: 40.5 },
+      { name: "PW", loft: 45.5 },
+      { name: "UW", loft: 50 },
+      { name: "SW", loft: 55 },
+    ],
+  },
+  {
+    brand: "Ping",
+    model: "Zing (1990)",
     year: 1990,
     category: "Players",
     clubs: [
@@ -325,11 +546,42 @@ export const CLUB_CATALOG: ClubModel[] = [
       { name: "SW", loft: 52 },
     ],
   },
+  {
+    brand: "Ping",
+    model: "G430 Hybrids & Fairways (2023)",
+    year: 2023,
+    category: "Hybrid/Fairway",
+    clubs: [
+      { name: "3 Wood", loft: 14.5 },
+      { name: "5 Wood", loft: 17.5 },
+      { name: "3 Hybrid", loft: 19 },
+      { name: "4 Hybrid", loft: 22 },
+      { name: "5 Hybrid", loft: 26 },
+      { name: "6 Hybrid", loft: 30 },
+    ],
+  },
+  {
+    brand: "Ping",
+    model: "Glide 4.0 Wedges",
+    year: 2023,
+    category: "Wedge Set",
+    clubs: [
+      { name: "46° Glide PW", loft: 46 },
+      { name: "50° Glide GW", loft: 50 },
+      { name: "52° Glide GW", loft: 52 },
+      { name: "54° Glide SW", loft: 54 },
+      { name: "56° Glide SW", loft: 56 },
+      { name: "58° Glide LW", loft: 58 },
+      { name: "60° Glide LW", loft: 60 },
+    ],
+  },
 
-  // === COBRA ===
+  // ===========================
+  // COBRA
+  // ===========================
   {
     brand: "Cobra",
-    model: "Darkspeed",
+    model: "Darkspeed (2024)",
     year: 2024,
     category: "Game Improvement",
     clubs: [
@@ -346,7 +598,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Cobra",
-    model: "King Forged Tec",
+    model: "King Forged Tec (2024)",
     year: 2024,
     category: "Players Distance",
     clubs: [
@@ -359,11 +611,60 @@ export const CLUB_CATALOG: ClubModel[] = [
       { name: "PW", loft: 44 },
     ],
   },
+  {
+    brand: "Cobra",
+    model: "King Tour (2023)",
+    year: 2023,
+    category: "Players",
+    clubs: [
+      { name: "3 Iron", loft: 20 },
+      { name: "4 Iron", loft: 23 },
+      { name: "5 Iron", loft: 26 },
+      { name: "6 Iron", loft: 29 },
+      { name: "7 Iron", loft: 33 },
+      { name: "8 Iron", loft: 37 },
+      { name: "9 Iron", loft: 41 },
+      { name: "PW", loft: 45 },
+    ],
+  },
+  {
+    brand: "Cobra",
+    model: "Snakebite Wedges",
+    year: 2024,
+    category: "Wedge Set",
+    clubs: [
+      { name: "46° Snakebite PW", loft: 46 },
+      { name: "50° Snakebite AW", loft: 50 },
+      { name: "52° Snakebite GW", loft: 52 },
+      { name: "54° Snakebite SW", loft: 54 },
+      { name: "56° Snakebite SW", loft: 56 },
+      { name: "58° Snakebite LW", loft: 58 },
+      { name: "60° Snakebite LW", loft: 60 },
+    ],
+  },
 
-  // === MIZUNO ===
+  // ===========================
+  // MIZUNO
+  // ===========================
   {
     brand: "Mizuno",
-    model: "Pro 245",
+    model: "Pro 243 (2024)",
+    year: 2024,
+    category: "Players",
+    clubs: [
+      { name: "3 Iron", loft: 20 },
+      { name: "4 Iron", loft: 23 },
+      { name: "5 Iron", loft: 26 },
+      { name: "6 Iron", loft: 29.5 },
+      { name: "7 Iron", loft: 33.5 },
+      { name: "8 Iron", loft: 37.5 },
+      { name: "9 Iron", loft: 42 },
+      { name: "PW", loft: 46 },
+    ],
+  },
+  {
+    brand: "Mizuno",
+    model: "Pro 245 (2024)",
     year: 2024,
     category: "Players Distance",
     clubs: [
@@ -378,7 +679,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Mizuno",
-    model: "Pro 225",
+    model: "Pro 225 (2022)",
     year: 2022,
     category: "Players Distance",
     clubs: [
@@ -393,7 +694,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Mizuno",
-    model: "JPX 925 Hot Metal",
+    model: "JPX 925 Hot Metal (2024)",
     year: 2024,
     category: "Game Improvement",
     clubs: [
@@ -410,25 +711,26 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Mizuno",
-    model: "Pro 243",
-    year: 2024,
-    category: "Players",
+    model: "ES21 Wedges",
+    year: 2021,
+    category: "Wedge Set",
     clubs: [
-      { name: "3 Iron", loft: 20 },
-      { name: "4 Iron", loft: 23 },
-      { name: "5 Iron", loft: 26 },
-      { name: "6 Iron", loft: 29.5 },
-      { name: "7 Iron", loft: 33.5 },
-      { name: "8 Iron", loft: 37.5 },
-      { name: "9 Iron", loft: 42 },
-      { name: "PW", loft: 46 },
+      { name: "46° ES21 PW", loft: 46 },
+      { name: "50° ES21 AW", loft: 50 },
+      { name: "52° ES21 GW", loft: 52 },
+      { name: "54° ES21 SW", loft: 54 },
+      { name: "56° ES21 SW", loft: 56 },
+      { name: "58° ES21 LW", loft: 58 },
+      { name: "60° ES21 LW", loft: 60 },
     ],
   },
 
-  // === SRIXON / CLEVELAND ===
+  // ===========================
+  // SRIXON
+  // ===========================
   {
     brand: "Srixon",
-    model: "ZX5 Mk II",
+    model: "ZX5 Mk II (2023)",
     year: 2023,
     category: "Players Distance",
     clubs: [
@@ -444,7 +746,7 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Srixon",
-    model: "ZX7 Mk II",
+    model: "ZX7 Mk II (2023)",
     year: 2023,
     category: "Players",
     clubs: [
@@ -458,57 +760,125 @@ export const CLUB_CATALOG: ClubModel[] = [
       { name: "PW", loft: 46 },
     ],
   },
-
-  // === TAYLORMADE OLDER / POPULAR ===
   {
-    brand: "TaylorMade",
-    model: "SIM2 Max",
-    year: 2021,
+    brand: "Srixon",
+    model: "ZX4 Mk II (2023)",
+    year: 2023,
     category: "Game Improvement",
     clubs: [
-      { name: "4 Iron", loft: 19 },
-      { name: "5 Iron", loft: 21.5 },
+      { name: "5 Iron", loft: 22 },
       { name: "6 Iron", loft: 25 },
-      { name: "7 Iron", loft: 28.5 },
+      { name: "7 Iron", loft: 28 },
+      { name: "8 Iron", loft: 32 },
+      { name: "9 Iron", loft: 37 },
+      { name: "PW", loft: 42 },
+      { name: "AW", loft: 47 },
+      { name: "SW", loft: 52 },
+    ],
+  },
+  {
+    brand: "Srixon",
+    model: "Z585 (2018)",
+    year: 2018,
+    category: "Game Improvement",
+    clubs: [
+      { name: "4 Iron", loft: 20.5 },
+      { name: "5 Iron", loft: 23.5 },
+      { name: "6 Iron", loft: 26.5 },
+      { name: "7 Iron", loft: 30 },
+      { name: "8 Iron", loft: 34.5 },
+      { name: "9 Iron", loft: 39.5 },
+      { name: "PW", loft: 44.5 },
+      { name: "AW", loft: 49.5 },
+    ],
+  },
+
+  // ===========================
+  // CLEVELAND
+  // ===========================
+  {
+    brand: "Cleveland",
+    model: "Launcher XL (2022)",
+    year: 2022,
+    category: "Super Game Improvement",
+    clubs: [
+      { name: "5 Iron", loft: 22 },
+      { name: "6 Iron", loft: 25 },
+      { name: "7 Iron", loft: 28 },
+      { name: "8 Iron", loft: 32 },
+      { name: "9 Iron", loft: 36.5 },
+      { name: "PW", loft: 41 },
+      { name: "AW", loft: 46 },
+      { name: "SW", loft: 51 },
+    ],
+  },
+  {
+    brand: "Cleveland",
+    model: "Launcher HB Turbo (2020)",
+    year: 2020,
+    category: "Super Game Improvement",
+    clubs: [
+      { name: "4 Iron", loft: 20 },
+      { name: "5 Iron", loft: 23 },
+      { name: "6 Iron", loft: 26 },
+      { name: "7 Iron", loft: 29 },
       { name: "8 Iron", loft: 33 },
       { name: "9 Iron", loft: 38 },
       { name: "PW", loft: 43 },
-      { name: "AW", loft: 49 },
-      { name: "SW", loft: 54 },
+      { name: "AW", loft: 48 },
+      { name: "SW", loft: 53 },
+    ],
+  },
+  {
+    brand: "Cleveland",
+    model: "RTX 6 ZipCore Wedges",
+    year: 2023,
+    category: "Wedge Set",
+    clubs: [
+      { name: "46° RTX6 PW", loft: 46 },
+      { name: "50° RTX6 AW", loft: 50 },
+      { name: "52° RTX6 GW", loft: 52 },
+      { name: "54° RTX6 SW", loft: 54 },
+      { name: "56° RTX6 SW", loft: 56 },
+      { name: "58° RTX6 LW", loft: 58 },
+      { name: "60° RTX6 LW", loft: 60 },
     ],
   },
 
-  // === TITLEIST AP SERIES (from user's data) ===
+  // ===========================
+  // WILSON
+  // ===========================
   {
-    brand: "Titleist",
-    model: "AP1",
-    year: 2016,
-    category: "Game Improvement",
+    brand: "Wilson",
+    model: "Staff Model (2023)",
+    year: 2023,
+    category: "Players",
     clubs: [
-      { name: "4 Iron", loft: 23 },
-      { name: "5 Iron", loft: 26 },
-      { name: "6 Iron", loft: 29 },
-      { name: "7 Iron", loft: 32 },
-      { name: "8 Iron", loft: 36 },
-      { name: "9 Iron", loft: 40 },
-      { name: "PW", loft: 44 },
+      { name: "3 Iron", loft: 21 },
+      { name: "4 Iron", loft: 24 },
+      { name: "5 Iron", loft: 27 },
+      { name: "6 Iron", loft: 30 },
+      { name: "7 Iron", loft: 34 },
+      { name: "8 Iron", loft: 38 },
+      { name: "9 Iron", loft: 42 },
+      { name: "PW", loft: 46 },
     ],
   },
   {
-    brand: "Titleist",
-    model: "AP3",
-    year: 2018,
-    category: "Players Distance",
+    brand: "Wilson",
+    model: "Dynapower (2023)",
+    year: 2023,
+    category: "Game Improvement",
     clubs: [
-      { name: "3 Iron", loft: 19 },
-      { name: "4 Iron", loft: 22 },
-      { name: "5 Iron", loft: 25 },
-      { name: "6 Iron", loft: 28 },
-      { name: "7 Iron", loft: 31 },
-      { name: "8 Iron", loft: 35 },
+      { name: "4 Iron", loft: 19 },
+      { name: "5 Iron", loft: 22 },
+      { name: "6 Iron", loft: 25 },
+      { name: "7 Iron", loft: 29 },
+      { name: "8 Iron", loft: 34 },
       { name: "9 Iron", loft: 39 },
-      { name: "PW", loft: 43 },
-      { name: "W", loft: 48 },
+      { name: "PW", loft: 44 },
+      { name: "AW", loft: 49 },
+      { name: "SW", loft: 54 },
     ],
   },
 ];
