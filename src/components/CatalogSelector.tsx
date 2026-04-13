@@ -64,7 +64,7 @@ export function CatalogSelector({ onSelect }: Props) {
       <div className="grid grid-cols-2 gap-3">
         {/* Brand */}
         <Select value={brand} onValueChange={handleBrandChange}>
-          <SelectTrigger className="bg-card border-border">
+          <SelectTrigger className="bg-card border-border h-11">
             <SelectValue placeholder="Select brand..." />
           </SelectTrigger>
           <SelectContent>
@@ -76,7 +76,7 @@ export function CatalogSelector({ onSelect }: Props) {
 
         {/* Model */}
         <Select value={modelIdx} onValueChange={handleModelChange} disabled={!brand}>
-          <SelectTrigger className="bg-card border-border">
+          <SelectTrigger className="bg-card border-border h-11">
             <SelectValue placeholder={brand ? "Select model..." : "Pick a brand first"} />
           </SelectTrigger>
           <SelectContent>
@@ -97,7 +97,7 @@ export function CatalogSelector({ onSelect }: Props) {
       {/* Spec / Variant — only shown if model has multiple specs */}
       {hasMultipleSpecs && (
         <Select value={specIdx} onValueChange={handleSpecChange} disabled={!selectedModel}>
-          <SelectTrigger className="bg-card border-border w-full">
+          <SelectTrigger className="bg-card border-border w-full h-11">
             <SelectValue placeholder="Select spec / loft option..." />
           </SelectTrigger>
           <SelectContent>
