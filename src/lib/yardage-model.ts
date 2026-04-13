@@ -9,6 +9,7 @@ export interface Club {
   predictedYardage?: number;
   adjustedYardage?: number;
   source?: string; // e.g. "Titleist T100 (2024)" for mixed bag tracking
+  enabled?: boolean; // whether club is active in calculator (default true)
 }
 
 export interface CalibrationPoint {
@@ -100,6 +101,67 @@ export function predictYardages(
       : undefined;
     return { ...club, predictedYardage: predicted, adjustedYardage: adjusted };
   });
+}
+
+/**
+ * Calculate "plays as" distance for the on-course calculator.
+ * - Elevation: every 3 feet = 1 yard. Uphill adds, downhill subtracts.
+ * - Headwind: +1% per mph
+ * - Tailwind: -0.5% per mph
+ * - Crosswind: no distance change
+ */
+export function calculatePlaysAs(
+  distanceYards: number,
+  elevationFeet: number,
+  windSpeed: number,
+  windType: "headwind" | "tailwind" | "crosswind" | "none"
+): number {
+  let adjusted = distanceYards;
+
+  // Elevation adjustment: +1 yard per 3 feet uphill, -1 per 3 feet downhill
+  adjusted += elevationFeet / 3;
+
+  // Wind adjustment
+  if (windType === "headwind") {
+    adjusted += distanceYards * (windSpeed * 0.01);
+  } else if (windType === "tailwind") {
+    adjusted -= distanceYards * (windSpeed * 0.005);
+  }
+
+  return Math.round(adjusted);
+}
+
+/**
+ * Find the best club for a given yardage from predicted clubs.
+ * Returns the closest match plus one above and one below.
+ */
+export function findClubRecommendation(
+  clubs: Club[],
+  targetYardage: number
+): { primary: Club | null; above: Club | null; below: Club | null } {
+  // Filter to enabled clubs with predictions, sorted by yardage desc
+  const available = clubs
+    .filter((c) => c.enabled !== false && c.predictedYardage && c.predictedYardage > 0)
+    .sort((a, b) => (b.predictedYardage ?? 0) - (a.predictedYardage ?? 0));
+
+  if (available.length === 0) return { primary: null, above: null, below: null };
+
+  // Find closest club by absolute distance
+  let closestIdx = 0;
+  let closestDiff = Infinity;
+  available.forEach((club, idx) => {
+    const diff = Math.abs((club.predictedYardage ?? 0) - targetYardage);
+    if (diff < closestDiff) {
+      closestDiff = diff;
+      closestIdx = idx;
+    }
+  });
+
+  const primary = available[closestIdx];
+  const above = closestIdx > 0 ? available[closestIdx - 1] : null;
+  const below = closestIdx < available.length - 1 ? available[closestIdx + 1] : null;
+
+  return { primary, above, below };
 }
 
 let idCounter = 0;

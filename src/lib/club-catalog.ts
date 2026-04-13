@@ -209,9 +209,9 @@ export const CLUB_CATALOG: ClubModel[] = [
         { name: "9 Iron", loft: 41 }, { name: "PW", loft: 45 }, { name: "UW", loft: 50 },
       ]},
       { spec: "Power Spec", clubs: [
-        { name: "3 Iron", loft: 17.5 }, { name: "4 Iron", loft: 21 }, { name: "5 Iron", loft: 24.5 },
+        { name: "3 Iron", loft: 19 }, { name: "4 Iron", loft: 22 }, { name: "5 Iron", loft: 25 },
         { name: "6 Iron", loft: 28 }, { name: "7 Iron", loft: 31.5 }, { name: "8 Iron", loft: 35.5 },
-        { name: "9 Iron", loft: 39.5 }, { name: "PW", loft: 43.5 }, { name: "UW", loft: 48.5 },
+        { name: "9 Iron", loft: 40 }, { name: "PW", loft: 44.5 }, { name: "UW", loft: 49.5 },
       ]},
     ],
   },
@@ -224,7 +224,12 @@ export const CLUB_CATALOG: ClubModel[] = [
       { spec: "Standard", clubs: [
         { name: "3 Iron", loft: 18 }, { name: "4 Iron", loft: 21 }, { name: "5 Iron", loft: 24 },
         { name: "6 Iron", loft: 27 }, { name: "7 Iron", loft: 30.5 }, { name: "8 Iron", loft: 35 },
-        { name: "9 Iron", loft: 40 }, { name: "PW", loft: 45 },
+        { name: "9 Iron", loft: 40 }, { name: "PW", loft: 45 }, { name: "UW", loft: 50 },
+      ]},
+      { spec: "Power Spec", clubs: [
+        { name: "3 Iron", loft: 17 }, { name: "4 Iron", loft: 19.5 }, { name: "5 Iron", loft: 22.5 },
+        { name: "6 Iron", loft: 25.5 }, { name: "7 Iron", loft: 29 }, { name: "8 Iron", loft: 33.5 },
+        { name: "9 Iron", loft: 38.5 }, { name: "PW", loft: 44 }, { name: "UW", loft: 49 },
       ]},
     ],
   },
