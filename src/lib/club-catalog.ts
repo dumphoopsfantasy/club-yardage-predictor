@@ -1020,6 +1020,20 @@ export const CLUB_CATALOG: ClubModel[] = [
   },
   {
     brand: "Mizuno",
+    model: "JPX 925 Hot Metal Pro",
+    year: 2024,
+    category: "Players Distance",
+    variants: [
+      { spec: "Standard", clubs: [
+        { name: "4 Iron", loft: 19 }, { name: "5 Iron", loft: 22 },
+        { name: "6 Iron", loft: 25 }, { name: "7 Iron", loft: 28 },
+        { name: "8 Iron", loft: 32.5 }, { name: "9 Iron", loft: 37 },
+        { name: "PW", loft: 42 }, { name: "GW", loft: 48 },
+      ]},
+    ],
+  },
+  {
+    brand: "Mizuno",
     model: "MP-20",
     year: 2019,
     category: "Players",
