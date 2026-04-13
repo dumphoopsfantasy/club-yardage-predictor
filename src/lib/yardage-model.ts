@@ -18,6 +18,73 @@ export interface CalibrationPoint {
   yardage: number;
 }
 
+export type LieType = "flat" | "above_feet" | "below_feet" | "uphill" | "downhill";
+export type LieSeverity = "slight" | "medium" | "severe";
+export type RoughType = "fairway" | "light_rough" | "heavy_rough" | "buried";
+
+const LIE_AIM_PERCENT: Record<LieSeverity, number> = {
+  slight: 0.03,
+  medium: 0.05,
+  severe: 0.08,
+};
+
+const LIE_DISTANCE_PERCENT: Record<LieSeverity, number> = {
+  slight: 0.03,
+  medium: 0.06,
+  severe: 0.10,
+};
+
+const ROUGH_DISTANCE_PERCENT: Record<RoughType, number> = {
+  fairway: 0,
+  light_rough: 0.05,
+  heavy_rough: 0.15,
+  buried: 0.25,
+};
+
+/**
+ * Calculate aim offset from ball-above/below-feet lies.
+ * Returns positive for "aim right", negative for "aim left", 0 for no adjustment.
+ */
+export function calculateAimOffset(
+  distanceYards: number,
+  lieType: LieType,
+  severity: LieSeverity
+): number {
+  if (lieType === "above_feet") {
+    return Math.round(distanceYards * LIE_AIM_PERCENT[severity]);
+  }
+  if (lieType === "below_feet") {
+    return -Math.round(distanceYards * LIE_AIM_PERCENT[severity]);
+  }
+  return 0;
+}
+
+/**
+ * Apply lie (uphill/downhill) and rough adjustments to an already-adjusted yardage.
+ */
+export function applyLieAndRoughAdjustment(
+  adjustedYards: number,
+  lieType: LieType,
+  severity: LieSeverity,
+  roughType: RoughType
+): number {
+  let result = adjustedYards;
+
+  // Uphill plays longer (need more club → add yards)
+  if (lieType === "uphill") {
+    result += adjustedYards * LIE_DISTANCE_PERCENT[severity];
+  }
+  // Downhill plays shorter (need less club → subtract yards)
+  if (lieType === "downhill") {
+    result -= adjustedYards * LIE_DISTANCE_PERCENT[severity];
+  }
+
+  // Rough reduces distance (need more club → add yards to "plays as")
+  result += adjustedYards * ROUGH_DISTANCE_PERCENT[roughType];
+
+  return Math.round(result);
+}
+
 export interface EnvironmentalConditions {
   altitude: number; // feet above sea level
   temperature: number; // °F

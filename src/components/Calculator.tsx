@@ -2,12 +2,17 @@ import { useState, useMemo } from "react";
 import {
   type Club,
   type CalibrationPoint,
+  type LieType,
+  type LieSeverity,
+  type RoughType,
   predictYardages,
   calculatePlaysAs,
   findClubRecommendation,
+  applyLieAndRoughAdjustment,
+  calculateAimOffset,
 } from "@/lib/yardage-model";
 import { useWind } from "@/hooks/use-wind";
-import { Wind, RefreshCw, ChevronUp, ChevronDown, Minus, Plus, MapPin } from "lucide-react";
+import { Wind, RefreshCw, ChevronUp, ChevronDown, Minus, Plus, MapPin, ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type WindType = "headwind" | "tailwind" | "crosswind" | "none";
@@ -17,11 +22,35 @@ interface Props {
   calibrations: CalibrationPoint[];
 }
 
+const lieTypeOptions: { value: LieType; label: string }[] = [
+  { value: "flat", label: "Flat" },
+  { value: "above_feet", label: "Above Feet" },
+  { value: "below_feet", label: "Below Feet" },
+  { value: "uphill", label: "Uphill" },
+  { value: "downhill", label: "Downhill" },
+];
+
+const severityOptions: { value: LieSeverity; label: string }[] = [
+  { value: "slight", label: "Slight" },
+  { value: "medium", label: "Medium" },
+  { value: "severe", label: "Severe" },
+];
+
+const roughTypeOptions: { value: RoughType; label: string }[] = [
+  { value: "fairway", label: "Fairway" },
+  { value: "light_rough", label: "Light Rough" },
+  { value: "heavy_rough", label: "Heavy Rough" },
+  { value: "buried", label: "Buried" },
+];
+
 export function Calculator({ clubs, calibrations }: Props) {
   const [distance, setDistance] = useState<number | "">("");
   const [elevation, setElevation] = useState(0);
   const [windType, setWindType] = useState<WindType>("none");
   const [manualWindSpeed, setManualWindSpeed] = useState<number | null>(null);
+  const [lieType, setLieType] = useState<LieType>("flat");
+  const [lieSeverity, setLieSeverity] = useState<LieSeverity>("slight");
+  const [roughType, setRoughType] = useState<RoughType>("fairway");
 
   const { wind, loading: windLoading, error: windError, refresh: refreshWind } = useWind();
 
@@ -38,11 +67,18 @@ export function Calculator({ clubs, calibrations }: Props) {
 
   const hasSetup = predictedClubs.length > 0 && predictedClubs.some((c) => c.predictedYardage);
 
-  // Calculate "plays as" yardage
+  // Calculate "plays as" yardage with lie + rough
   const playsAs = useMemo(() => {
     if (!distance || distance <= 0) return null;
-    return calculatePlaysAs(distance, elevation, effectiveWindSpeed, windType);
-  }, [distance, elevation, effectiveWindSpeed, windType]);
+    const baseAdjusted = calculatePlaysAs(distance, elevation, effectiveWindSpeed, windType);
+    return applyLieAndRoughAdjustment(baseAdjusted, lieType, lieSeverity, roughType);
+  }, [distance, elevation, effectiveWindSpeed, windType, lieType, lieSeverity, roughType]);
+
+  // Aim offset from ball above/below feet
+  const aimOffset = useMemo(() => {
+    if (!distance || distance <= 0) return 0;
+    return calculateAimOffset(distance, lieType, lieSeverity);
+  }, [distance, lieType, lieSeverity]);
 
   // Find recommended club
   const recommendation = useMemo(() => {
@@ -56,6 +92,31 @@ export function Calculator({ clubs, calibrations }: Props) {
     { value: "crosswind", label: "Cross" },
     { value: "none", label: "None" },
   ];
+
+  // Build active condition badges
+  const conditionBadges: string[] = [];
+  if (lieType !== "flat") {
+    const lieLabel = lieTypeOptions.find((o) => o.value === lieType)?.label ?? "";
+    conditionBadges.push(`⛳ ${lieSeverity.charAt(0).toUpperCase() + lieSeverity.slice(1)} ${lieLabel.toLowerCase()}`);
+  }
+  if (roughType !== "fairway") {
+    const roughLabel = roughTypeOptions.find((o) => o.value === roughType)?.label ?? "";
+    conditionBadges.push(`🌿 ${roughLabel}`);
+  }
+  if (effectiveWindSpeed > 0 && windType !== "none") {
+    conditionBadges.push(`💨 ${effectiveWindSpeed}mph ${windType}`);
+  }
+
+  const handleDistanceChange = (v: string) => {
+    if (v === "") {
+      setDistance("");
+      setLieType("flat");
+      setLieSeverity("slight");
+      setRoughType("fairway");
+    } else {
+      setDistance(Math.max(0, parseInt(v) || 0));
+    }
+  };
 
   if (!hasSetup) {
     return (
@@ -83,10 +144,7 @@ export function Calculator({ clubs, calibrations }: Props) {
             type="number"
             inputMode="numeric"
             value={distance}
-            onChange={(e) => {
-              const v = e.target.value;
-              setDistance(v === "" ? "" : Math.max(0, parseInt(v) || 0));
-            }}
+            onChange={(e) => handleDistanceChange(e.target.value)}
             placeholder="150"
             className="w-full h-20 text-center text-5xl font-bold bg-card border-2 border-border rounded-2xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none tabular-nums text-foreground placeholder:text-muted-foreground/40"
           />
@@ -214,9 +272,86 @@ export function Calculator({ clubs, calibrations }: Props) {
         </div>
       </div>
 
+      {/* Lie Type */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-foreground uppercase tracking-wide">
+          Lie
+        </label>
+        <div className="flex flex-wrap gap-1.5">
+          {lieTypeOptions.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setLieType(opt.value)}
+              className={`px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors min-h-[44px] ${
+                lieType === opt.value
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-card border-2 border-border text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Severity — only visible when lie is not flat */}
+        {lieType !== "flat" && (
+          <div className="flex gap-1.5 pt-1">
+            {severityOptions.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setLieSeverity(opt.value)}
+                className={`flex-1 py-2 rounded-xl text-sm font-semibold transition-colors min-h-[44px] ${
+                  lieSeverity === opt.value
+                    ? "bg-accent text-accent-foreground"
+                    : "bg-card border-2 border-border text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Rough Type */}
+      <div className="space-y-2">
+        <label className="text-sm font-semibold text-foreground uppercase tracking-wide">
+          Rough
+        </label>
+        <div className="flex flex-wrap gap-1.5">
+          {roughTypeOptions.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setRoughType(opt.value)}
+              className={`px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors min-h-[44px] ${
+                roughType === opt.value
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-card border-2 border-border text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Result */}
       {playsAs !== null && recommendation.primary && (
         <div className="rounded-2xl bg-primary p-6 text-center space-y-3">
+          {/* Condition badges */}
+          {conditionBadges.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-1.5 mb-1">
+              {conditionBadges.map((badge) => (
+                <span
+                  key={badge}
+                  className="inline-flex items-center rounded-full bg-primary-foreground/15 px-2.5 py-0.5 text-xs font-medium text-primary-foreground/80"
+                >
+                  {badge}
+                </span>
+              ))}
+            </div>
+          )}
+
           {/* Plays as */}
           <div>
             <p className="text-primary-foreground/70 text-sm font-medium uppercase tracking-wider">
@@ -227,6 +362,21 @@ export function Calculator({ clubs, calibrations }: Props) {
               <span className="text-xl font-semibold ml-1">yds</span>
             </p>
           </div>
+
+          {/* Aim direction — only when there's an offset */}
+          {aimOffset !== 0 && (
+            <p className="text-primary-foreground/80 text-sm font-medium flex items-center justify-center gap-1">
+              {aimOffset > 0 ? (
+                <>
+                  Aim ~{aimOffset} yards right <ArrowRight className="h-4 w-4" />
+                </>
+              ) : (
+                <>
+                  <ArrowLeft className="h-4 w-4" /> Aim ~{Math.abs(aimOffset)} yards left
+                </>
+              )}
+            </p>
+          )}
 
           {/* Primary recommendation */}
           <div className="border-t border-primary-foreground/20 pt-3">
