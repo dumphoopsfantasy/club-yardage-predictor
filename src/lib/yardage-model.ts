@@ -10,6 +10,7 @@ export interface Club {
   adjustedYardage?: number;
   source?: string; // e.g. "Titleist T100 (2024)" for mixed bag tracking
   enabled?: boolean; // whether club is active in calculator (default true)
+  addedIndividually?: boolean; // true for clubs added via "Add Club" (not from base set)
 }
 
 export interface CalibrationPoint {

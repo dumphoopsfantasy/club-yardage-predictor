@@ -1,3 +1,4 @@
+import { useState, useCallback, useEffect } from "react";
 import {
   type Club,
   type CalibrationPoint,
@@ -6,28 +7,65 @@ import { usePersistedState, clearAllPersistedState } from "@/hooks/use-persisted
 import { Calculator } from "@/components/Calculator";
 import { MyBag } from "@/components/MyBag";
 import { Flag, Crosshair, ShoppingBag } from "lucide-react";
+import { toast } from "sonner";
 
 type Tab = "calculator" | "bag";
 type BagMode = "catalog" | "mixed";
 
+export interface BagState {
+  clubs: Club[];
+  calibrations: CalibrationPoint[];
+  selectedModel: string;
+  bagMode: BagMode;
+}
+
 export default function Index() {
   const [activeTab, setActiveTab] = usePersistedState<Tab>("activeTab", "calculator");
 
-  // Persisted state
-  const [clubs, setClubs] = usePersistedState<Club[]>("clubs", []);
-  const [calibrations, setCalibrations] = usePersistedState<CalibrationPoint[]>(
+  // Saved state — persisted in localStorage, used by Calculator
+  const [savedClubs, setSavedClubs] = usePersistedState<Club[]>("clubs", []);
+  const [savedCalibrations, setSavedCalibrations] = usePersistedState<CalibrationPoint[]>(
     "calibrations",
     []
   );
-  const [selectedModel, setSelectedModel] = usePersistedState("selectedModel", "");
-  const [bagMode, setBagMode] = usePersistedState<BagMode>("bagMode", "catalog");
+  const [savedSelectedModel, setSavedSelectedModel] = usePersistedState("selectedModel", "");
+  const [savedBagMode, setSavedBagMode] = usePersistedState<BagMode>("bagMode", "catalog");
+
+  // Draft state — in-memory, used by MyBag for editing
+  const [draftClubs, setDraftClubs] = useState<Club[]>(savedClubs);
+  const [draftCalibrations, setDraftCalibrations] = useState<CalibrationPoint[]>(savedCalibrations);
+  const [draftSelectedModel, setDraftSelectedModel] = useState(savedSelectedModel);
+  const [draftBagMode, setDraftBagMode] = useState<BagMode>(savedBagMode);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  // Track unsaved changes by comparing draft to saved
+  useEffect(() => {
+    const changed =
+      JSON.stringify(draftClubs) !== JSON.stringify(savedClubs) ||
+      JSON.stringify(draftCalibrations) !== JSON.stringify(savedCalibrations) ||
+      draftSelectedModel !== savedSelectedModel ||
+      draftBagMode !== savedBagMode;
+    setHasUnsavedChanges(changed);
+  }, [draftClubs, draftCalibrations, draftSelectedModel, draftBagMode, savedClubs, savedCalibrations, savedSelectedModel, savedBagMode]);
+
+  const handleSaveBag = useCallback(() => {
+    setSavedClubs(draftClubs);
+    setSavedCalibrations(draftCalibrations);
+    setSavedSelectedModel(draftSelectedModel);
+    setSavedBagMode(draftBagMode);
+    toast.success("Bag saved!");
+  }, [draftClubs, draftCalibrations, draftSelectedModel, draftBagMode, setSavedClubs, setSavedCalibrations, setSavedSelectedModel, setSavedBagMode]);
 
   const handleReset = () => {
     clearAllPersistedState();
-    setClubs([]);
-    setCalibrations([]);
-    setSelectedModel("");
-    setBagMode("catalog");
+    setSavedClubs([]);
+    setSavedCalibrations([]);
+    setSavedSelectedModel("");
+    setSavedBagMode("catalog");
+    setDraftClubs([]);
+    setDraftCalibrations([]);
+    setDraftSelectedModel("");
+    setDraftBagMode("catalog");
     setActiveTab("calculator");
   };
 
@@ -50,18 +88,20 @@ export default function Index() {
       {/* Screen content */}
       <main className="flex-1 pb-20">
         {activeTab === "calculator" ? (
-          <Calculator clubs={clubs} calibrations={calibrations} />
+          <Calculator clubs={savedClubs} calibrations={savedCalibrations} />
         ) : (
           <MyBag
-            clubs={clubs}
-            setClubs={setClubs}
-            calibrations={calibrations}
-            setCalibrations={setCalibrations}
-            selectedModel={selectedModel}
-            setSelectedModel={setSelectedModel}
-            bagMode={bagMode}
-            setBagMode={setBagMode}
+            clubs={draftClubs}
+            setClubs={setDraftClubs}
+            calibrations={draftCalibrations}
+            setCalibrations={setDraftCalibrations}
+            selectedModel={draftSelectedModel}
+            setSelectedModel={setDraftSelectedModel}
+            bagMode={draftBagMode}
+            setBagMode={setDraftBagMode}
             onReset={handleReset}
+            onSave={handleSaveBag}
+            hasUnsavedChanges={hasUnsavedChanges}
           />
         )}
       </main>
