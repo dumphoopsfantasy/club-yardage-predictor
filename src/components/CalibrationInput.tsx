@@ -87,7 +87,7 @@ export function CalibrationInput({ clubs, calibrations, onChange }: Props) {
                     <SelectValue placeholder="Select club" />
                   </SelectTrigger>
                   <SelectContent>
-                    {clubs.map((c) => (
+                    {clubs.filter((c) => c.enabled !== false).map((c) => (
                       <SelectItem key={c.id} value={c.id}>
                         {c.name || `${c.loft}°`} ({c.loft}°)
                       </SelectItem>

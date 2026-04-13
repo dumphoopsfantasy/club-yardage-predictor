@@ -63,18 +63,21 @@ export function MyBag({
   const baseSetClubs = clubs.filter((c) => !c.addedIndividually);
   const addedClubs = clubs.filter((c) => c.addedIndividually);
 
-  // All active clubs sorted by loft for the bag view
-  const allActiveSorted = useMemo(() => {
-    return [...clubs]
-      .filter((c) => c.enabled !== false)
-      .sort((a, b) => a.loft - b.loft);
+  // All clubs sorted by loft for the bag view (disabled shown grayed out)
+  const allClubsSorted = useMemo(() => {
+    return [...clubs].sort((a, b) => a.loft - b.loft);
+  }, [clubs]);
+
+  const enabledCount = useMemo(() => {
+    return clubs.filter((c) => c.enabled !== false).length;
   }, [clubs]);
 
   const predictedClubs = useMemo(() => {
-    if (calibrations.length === 0 || clubs.length === 0) return [];
+    const enabled = clubs.filter((c) => c.enabled !== false);
+    if (calibrations.length === 0 || enabled.length === 0) return [];
     const validCals = calibrations.filter((c) => c.clubId && c.yardage > 0);
     if (validCals.length === 0) return [];
-    return predictYardages(clubs, validCals);
+    return predictYardages(enabled, validCals);
   }, [clubs, calibrations]);
 
   const hasResults =
@@ -222,44 +225,52 @@ export function MyBag({
             <span className="h-7 w-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shrink-0">
               3
             </span>
-            Your Bag ({allActiveSorted.length} clubs)
+            Your Bag ({enabledCount} clubs)
           </h3>
           <p className="text-sm text-muted-foreground">
             All active clubs sorted by loft. Individually added clubs can be removed with the X button.
           </p>
           <div className="rounded-xl border border-border bg-card divide-y divide-border">
-            {allActiveSorted.map((club) => (
-              <div
-                key={club.id}
-                className="flex items-center justify-between px-4 py-3"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <span className="text-sm font-medium text-foreground truncate">
-                    {club.name || `${club.loft}°`}
-                  </span>
-                  <span className="text-xs text-muted-foreground shrink-0">
-                    {club.loft}°
-                  </span>
+            {allClubsSorted.map((club) => {
+              const isDisabled = club.enabled === false;
+              return (
+                <div
+                  key={club.id}
+                  className={`flex items-center justify-between px-4 py-3 ${isDisabled ? "opacity-40" : ""}`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className={`text-sm font-medium truncate ${isDisabled ? "text-muted-foreground line-through" : "text-foreground"}`}>
+                      {club.name || `${club.loft}°`}
+                    </span>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {club.loft}°
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {isDisabled && (
+                      <span className="text-[11px] text-muted-foreground italic">
+                        Off
+                      </span>
+                    )}
+                    <span className="text-[11px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full truncate max-w-[140px]">
+                      {club.addedIndividually
+                        ? club.source || "Manual"
+                        : selectedModel || "Base Set"}
+                    </span>
+                    {club.addedIndividually && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveAddedClub(club.id)}
+                        className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-[11px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full truncate max-w-[140px]">
-                    {club.addedIndividually
-                      ? club.source || "Manual"
-                      : selectedModel || "Base Set"}
-                  </span>
-                  {club.addedIndividually && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveAddedClub(club.id)}
-                      className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
@@ -281,7 +292,7 @@ export function MyBag({
             </CollapsibleTrigger>
             <CollapsibleContent className="space-y-3">
               <CalibrationInput
-                clubs={clubs}
+                clubs={clubs.filter((c) => c.enabled !== false)}
                 calibrations={calibrations}
                 onChange={setCalibrations}
               />
