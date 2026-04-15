@@ -1,4 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
+// server entry
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -89,7 +90,8 @@ app.use((req, res, next) => {
   // Other ports are firewalled. Default to 5000 if not specified.
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || "5000", 10);
+  const portArg = process.argv.find((arg, i) => process.argv[i - 1] === "--port");
+  const port = parseInt(portArg || process.env.PORT || "5000", 10);
   httpServer.listen(
     {
       port,
