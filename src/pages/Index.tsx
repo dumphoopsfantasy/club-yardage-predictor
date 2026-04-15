@@ -30,10 +30,10 @@ export default function Index() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Screen content */}
       <main className="flex-1 pb-20">
-        {activeTab === "calculator" && <Calculator />}
-        {activeTab === "bag" && <MyBag />}
-        {activeTab === "rounds" && <Rounds />}
-        {activeTab === "settings" && <Settings />}
+        <div className={activeTab === "calculator" ? "" : "hidden"}><Calculator /></div>
+        <div className={activeTab === "bag" ? "" : "hidden"}><MyBag /></div>
+        <div className={activeTab === "rounds" ? "" : "hidden"}><Rounds /></div>
+        <div className={activeTab === "settings" ? "" : "hidden"}><Settings /></div>
       </main>
 
       {/* Bottom tab bar */}
