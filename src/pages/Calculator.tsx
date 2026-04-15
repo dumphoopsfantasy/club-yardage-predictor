@@ -7,6 +7,7 @@ import {
   type EnvironmentalConditions,
 } from "@/lib/yardage-model";
 import { Wind, Thermometer, Mountain, ChevronUp, ChevronDown, Loader2 } from "lucide-react";
+import greeceLogo from "@/assets/logo-greece.png";
 
 type WindDir = EnvironmentalConditions["windDirection"];
 type Lie = EnvironmentalConditions["lie"];
