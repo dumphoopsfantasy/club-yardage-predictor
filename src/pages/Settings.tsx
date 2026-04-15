@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useApp } from "@/context/AppContext";
-import { Sun, Moon, Download, Upload, Trash2, AlertTriangle } from "lucide-react";
+import { Sun, Moon, TreePine, Download, Upload, Trash2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Settings() {
@@ -9,13 +9,13 @@ export default function Settings() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleThemeToggle = () => {
-    const newTheme = settings.theme === "dark" ? "light" : "dark";
-    updateSettings({ theme: newTheme });
-    if (newTheme === "dark") {
+  const handleThemeChange = (theme: "dark" | "light" | "greece") => {
+    updateSettings({ theme });
+    document.documentElement.classList.remove("dark", "greece");
+    if (theme === "dark") {
       document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
+    } else if (theme === "greece") {
+      document.documentElement.classList.add("greece");
     }
   };
 
@@ -43,11 +43,11 @@ export default function Settings() {
       const text = await file.text();
       const data = JSON.parse(text);
       importData(data);
-      // Apply theme from imported data
+      document.documentElement.classList.remove("dark", "greece");
       if (data.settings?.theme === "dark") {
         document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
+      } else if (data.settings?.theme === "greece") {
+        document.documentElement.classList.add("greece");
       }
       toast.success("Data imported successfully");
     } catch {
@@ -59,10 +59,17 @@ export default function Settings() {
 
   const handleReset = () => {
     resetAll();
+    document.documentElement.classList.remove("greece");
     document.documentElement.classList.add("dark");
     setShowResetConfirm(false);
     toast.success("All data reset");
   };
+
+  const themes = [
+    { id: "light" as const, label: "Light", icon: Sun },
+    { id: "dark" as const, label: "Dark", icon: Moon },
+    { id: "greece" as const, label: "Greece", icon: TreePine },
+  ];
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-4">
@@ -71,23 +78,25 @@ export default function Settings() {
       <div className="space-y-4">
         {/* Theme */}
         <div className="bg-card border border-border rounded-xl p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm font-semibold">Theme</div>
-              <div className="text-xs text-muted-foreground">
-                {settings.theme === "dark" ? "Dark mode" : "Light mode"}
-              </div>
-            </div>
-            <button
-              onClick={handleThemeToggle}
-              className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
-            >
-              {settings.theme === "dark" ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
-            </button>
+          <div className="text-sm font-semibold mb-3">Theme</div>
+          <div className="flex gap-2">
+            {themes.map((t) => {
+              const Icon = t.icon;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => handleThemeChange(t.id)}
+                  className={`flex-1 h-11 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
+                    settings.theme === t.id
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {t.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 

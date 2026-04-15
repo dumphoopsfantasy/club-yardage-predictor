@@ -82,6 +82,44 @@
   --chart-5: 27 87% 65%;
 }
 
+/* GREECE THEME - Inspired by the golf logo */
+.greece {
+  --background: 48 60% 95%;
+  --foreground: 140 40% 12%;
+  --border: 140 25% 75%;
+  --card: 48 50% 92%;
+  --card-foreground: 140 40% 12%;
+  --card-border: 140 20% 78%;
+  --popover: 48 45% 90%;
+  --popover-foreground: 140 40% 12%;
+  --popover-border: 140 25% 75%;
+  --primary: 140 60% 28%;
+  --primary-foreground: 48 60% 95%;
+  --secondary: 48 45% 85%;
+  --secondary-foreground: 140 40% 12%;
+  --muted: 48 30% 88%;
+  --muted-foreground: 140 15% 40%;
+  --accent: 48 80% 55%;
+  --accent-foreground: 140 40% 12%;
+  --destructive: 0 84% 42%;
+  --destructive-foreground: 0 0% 98%;
+  --input: 140 20% 72%;
+  --ring: 140 60% 28%;
+  --sidebar: 48 50% 92%;
+  --sidebar-foreground: 140 40% 12%;
+  --sidebar-border: 140 20% 78%;
+  --sidebar-primary: 140 60% 28%;
+  --sidebar-primary-foreground: 48 60% 95%;
+  --sidebar-accent: 48 45% 82%;
+  --sidebar-accent-foreground: 140 40% 12%;
+  --sidebar-ring: 140 60% 28%;
+  --chart-1: 140 60% 28%;
+  --chart-2: 48 96% 50%;
+  --chart-3: 0 70% 50%;
+  --chart-4: 160 50% 40%;
+  --chart-5: 30 80% 50%;
+}
+
 @layer base {
   * {
     @apply border-border;
