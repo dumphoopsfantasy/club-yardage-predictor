@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useCallback, useRef, type ReactNode } from "react";
+import { createContext, useContext, useReducer, useCallback, useRef, useEffect, type ReactNode } from "react";
 import type { Club, Calibration, Round, Shot, AppSettings } from "@/lib/types";
 
 interface AppState {
