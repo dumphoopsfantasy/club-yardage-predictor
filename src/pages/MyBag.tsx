@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useApp } from "@/context/AppContext";
 import { getBrands, getModels, getClubsForModel } from "@/lib/club-catalog";
 import { calculatePDF, predictDistance } from "@/lib/yardage-model";
-import { Plus, Trash2, ChevronDown, Check, X, Target, Loader2 } from "lucide-react";
+import { Plus, Trash2, Check, X, Target } from "lucide-react";
 import { toast } from "sonner";
 
 export default function MyBag() {
@@ -13,7 +13,6 @@ export default function MyBag() {
   const [selectedModel, setSelectedModel] = useState("");
   const [selectedVariant, setSelectedVariant] = useState<string | undefined>();
   const [bagMode, setBagMode] = useState<"full" | "mixed">("full");
-  const [showCalibration, setShowCalibration] = useState(false);
   const [calClubId, setCalClubId] = useState<number | null>(null);
   const [calYardage, setCalYardage] = useState("");
   const [showCustom, setShowCustom] = useState(false);
@@ -125,6 +124,95 @@ export default function MyBag() {
   return (
     <div className="max-w-lg mx-auto px-4 pt-4">
       <h1 className="text-xl font-bold tracking-tight mb-4">My Bag</h1>
+
+      {/* Calibration Section — always visible near top */}
+      {clubs.length > 0 && (
+        <div className="bg-card border border-border rounded-xl p-4 mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Target className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold">Calibration</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <div className="w-16 h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-primary rounded-full transition-all"
+                    style={{ width: `${Math.min(100, calibrations.length * 20)}%` }}
+                  />
+                </div>
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {calibrations.length}/5
+                </span>
+              </div>
+              <span className="text-sm font-bold tabular-nums text-primary">
+                PDF {pdf.toFixed(2)}
+              </span>
+            </div>
+          </div>
+
+          {calibrations.length === 0 && (
+            <p className="text-xs text-muted-foreground mb-3">
+              Enter known distances to personalize your yardages. Hit a few clubs at the range, enter what you carry.
+            </p>
+          )}
+
+          {calibrations.length > 0 && (
+            <div className="space-y-1 mb-3">
+              {calibrations.map((cal) => {
+                const club = clubs.find((c) => c.id === cal.clubId);
+                return (
+                  <div
+                    key={cal.id}
+                    className="flex items-center justify-between bg-secondary/30 rounded-lg px-3 py-1.5"
+                  >
+                    <span className="text-sm">
+                      {club?.name || "Unknown"}: {cal.yardage} yds
+                    </span>
+                    <button
+                      onClick={() => removeCalibration(cal.id)}
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {calibrations.length < 5 && (
+            <div className="flex gap-2">
+              <select
+                value={calClubId || ""}
+                onChange={(e) => setCalClubId(e.target.value ? Number(e.target.value) : null)}
+                className="flex-1 h-10 bg-secondary rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="">Select club...</option>
+                {clubs
+                  .filter((c) => c.enabled)
+                  .map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+              </select>
+              <input
+                type="number"
+                placeholder="Yds"
+                value={calYardage}
+                onChange={(e) => setCalYardage(e.target.value)}
+                className="w-20 h-10 bg-secondary rounded-lg px-3 text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <button
+                onClick={handleAddCalibration}
+                disabled={!calClubId || !calYardage}
+                className="h-10 px-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Mode Toggle */}
       <div className="flex gap-2 mb-4">
@@ -369,106 +457,7 @@ export default function MyBag() {
         </div>
       )}
 
-      {/* Calibration Section */}
-      {clubs.length > 0 && (
-        <div className="mb-4">
-          <button
-            onClick={() => setShowCalibration(!showCalibration)}
-            className="flex items-center gap-2 mb-3"
-          >
-            <Target className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold">Calibration</span>
-            <ChevronDown
-              className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${
-                showCalibration ? "rotate-180" : ""
-              }`}
-            />
-          </button>
 
-          {showCalibration && (
-            <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-              <p className="text-xs text-muted-foreground">
-                Enter known distances for your clubs to personalize yardage
-                predictions. More calibration points = more accurate results.
-              </p>
-
-              <div className="flex items-center justify-between bg-secondary/50 rounded-lg px-3 py-2">
-                <span className="text-xs text-muted-foreground">Personal Distance Factor</span>
-                <span className="text-sm font-bold tabular-nums text-primary">
-                  {pdf.toFixed(2)}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary rounded-full transition-all"
-                    style={{ width: `${Math.min(100, calibrations.length * 20)}%` }}
-                  />
-                </div>
-                <span className="text-xs text-muted-foreground tabular-nums">
-                  {calibrations.length}/5
-                </span>
-              </div>
-
-              {calibrations.length > 0 && (
-                <div className="space-y-1">
-                  {calibrations.map((cal) => {
-                    const club = clubs.find((c) => c.id === cal.clubId);
-                    return (
-                      <div
-                        key={cal.id}
-                        className="flex items-center justify-between bg-secondary/30 rounded-lg px-3 py-2"
-                      >
-                        <span className="text-sm">
-                          {club?.name || "Unknown"}: {cal.yardage} yds
-                        </span>
-                        <button
-                          onClick={() => removeCalibration(cal.id)}
-                          className="text-muted-foreground hover:text-destructive"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {calibrations.length < 5 && (
-                <div className="flex gap-2">
-                  <select
-                    value={calClubId || ""}
-                    onChange={(e) => setCalClubId(e.target.value ? Number(e.target.value) : null)}
-                    className="flex-1 h-11 bg-secondary rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="">Select club...</option>
-                    {clubs
-                      .filter((c) => c.enabled)
-                      .map((c) => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                      ))}
-                  </select>
-                  <input
-                    type="number"
-                    placeholder="Yds"
-                    value={calYardage}
-                    onChange={(e) => setCalYardage(e.target.value)}
-                    className="w-20 h-11 bg-secondary rounded-lg px-3 text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  <button
-                    onClick={handleAddCalibration}
-                    disabled={!calClubId || !calYardage}
-                    className="h-11 px-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }

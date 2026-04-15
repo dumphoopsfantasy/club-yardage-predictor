@@ -2,12 +2,11 @@ import { useState, useEffect } from "react";
 import { useApp } from "@/context/AppContext";
 import Calculator from "@/pages/Calculator";
 import MyBag from "@/pages/MyBag";
-import Rounds from "@/pages/Rounds";
 import Settings from "@/pages/Settings";
-import { Crosshair, ShoppingBag, Flag, SettingsIcon } from "lucide-react";
+import { Crosshair, ShoppingBag, SettingsIcon } from "lucide-react";
 
 
-type Tab = "calculator" | "bag" | "rounds" | "settings";
+type Tab = "calculator" | "bag" | "settings";
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState<Tab>("calculator");
@@ -22,7 +21,6 @@ export default function Index() {
   const tabs: { id: Tab; label: string; icon: typeof Crosshair }[] = [
     { id: "calculator", label: "Calculator", icon: Crosshair },
     { id: "bag", label: "My Bag", icon: ShoppingBag },
-    { id: "rounds", label: "Rounds", icon: Flag },
     { id: "settings", label: "Settings", icon: SettingsIcon },
   ];
 
@@ -32,7 +30,6 @@ export default function Index() {
       <main className="flex-1 pb-20">
         <div className={activeTab === "calculator" ? "" : "hidden"}><Calculator /></div>
         <div className={activeTab === "bag" ? "" : "hidden"}><MyBag /></div>
-        <div className={activeTab === "rounds" ? "" : "hidden"}><Rounds /></div>
         <div className={activeTab === "settings" ? "" : "hidden"}><Settings /></div>
       </main>
 
