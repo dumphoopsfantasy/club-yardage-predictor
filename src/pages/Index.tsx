@@ -5,7 +5,7 @@ import MyBag from "@/pages/MyBag";
 import Rounds from "@/pages/Rounds";
 import Settings from "@/pages/Settings";
 import { Crosshair, ShoppingBag, Flag, SettingsIcon } from "lucide-react";
-import greeceLogo from "@/assets/logo-greece.png";
+
 
 type Tab = "calculator" | "bag" | "rounds" | "settings";
 
