@@ -30,6 +30,8 @@ const defaultSettings: AppSettings = {
   tempUnit: "fahrenheit",
 };
 
+const STORAGE_KEY = "dumpgolf_app_state";
+
 const initialState: AppState = {
   clubs: [],
   calibrations: [],
@@ -37,6 +39,23 @@ const initialState: AppState = {
   shots: [],
   settings: defaultSettings,
 };
+
+function loadState(): AppState {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return { ...initialState, ...parsed, settings: { ...defaultSettings, ...parsed.settings } };
+    }
+  } catch {}
+  return initialState;
+}
+
+function saveState(state: AppState) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {}
+}
 
 function appReducer(state: AppState, action: Action): AppState {
   switch (action.type) {
