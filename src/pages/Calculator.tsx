@@ -323,10 +323,10 @@ export default function Calculator() {
       {/* More Conditions Toggle */}
       <button
         onClick={() => setExpandConditions(!expandConditions)}
-        className="w-full flex items-center justify-center gap-1.5 py-2 mb-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+        className="w-full flex items-center justify-center gap-1.5 py-2.5 mb-3 text-sm font-medium text-secondary-foreground bg-secondary border border-border rounded-lg hover:bg-secondary/80 transition-colors"
       >
         {expandConditions ? "Less conditions" : "More conditions (lie, rough, tee, ground)"}
-        {expandConditions ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+        {expandConditions ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
       </button>
 
       {/* Expanded Conditions */}
