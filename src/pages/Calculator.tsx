@@ -452,17 +452,17 @@ export default function Calculator() {
               Ground
             </span>
             <div className="flex gap-2">
-              {(["dry", "damp", "wet", "rain"] as const).map((opt) => (
+              {(["dry", "soft", "rain"] as const).map((opt) => (
                 <button
                   key={opt}
                   onClick={() => setGround(opt)}
-                  className={`flex-1 h-11 rounded-lg text-sm font-medium transition-colors capitalize ${
+                  className={`flex-1 h-11 rounded-lg text-sm font-medium transition-colors ${
                     ground === opt
                       ? "bg-primary text-primary-foreground"
                       : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                   }`}
                 >
-                  {opt === "rain" ? "🌧️ Rain" : opt.charAt(0).toUpperCase() + opt.slice(1)}
+                  {opt === "dry" ? "Dry" : opt === "soft" ? "Soft" : "🌧️ Rain"}
                 </button>
               ))}
             </div>

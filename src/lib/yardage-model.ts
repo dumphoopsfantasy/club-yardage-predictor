@@ -10,7 +10,7 @@ export interface EnvironmentalConditions {
   lieSeverity: "slight" | "medium" | "severe";
   rough: "fairway" | "light_rough" | "heavy_rough" | "buried";
   teed: boolean;
-  ground: "dry" | "damp" | "wet" | "rain";
+  ground: "dry" | "soft" | "rain";
 }
 
 export interface YardageResult {
@@ -168,23 +168,15 @@ export function calculatePlaysAs(
   }
 
   // Ground conditions adjustment
-  // Wet conditions: less spin = flyer effect (ball goes farther through air)
-  // But soft ground = less roll, ball plugs. Net effect on "plays like":
-  // Damp: roughly neutral, slight flyer. Wet: noticeable flyer but no roll.
-  // Rain: flyer + drag cancel somewhat, but soft landing = less total distance.
+  // Soft: rained earlier / morning dew. Ball checks up, less roll. Fly it closer to pin.
+  // Rain: actively raining. Wet clubface = flyer, ball stops dead. Fly it all the way.
   if (conditions.ground !== "dry") {
     let groundYards = 0;
     let groundLabel = "";
-    if (conditions.ground === "damp") {
-      // Slight flyer, slightly less roll — roughly wash
-      groundYards = -Math.round(targetDistance * 0.01);
-      groundLabel = "Damp conditions";
-    } else if (conditions.ground === "wet") {
-      // Flyer carries farther but no roll — plays shorter overall
+    if (conditions.ground === "soft") {
       groundYards = Math.round(targetDistance * 0.03);
-      groundLabel = "Wet ground";
+      groundLabel = "Soft ground";
     } else if (conditions.ground === "rain") {
-      // Flyer + rain drag + soft landing — plays longer
       groundYards = Math.round(targetDistance * 0.05);
       groundLabel = "Rain";
     }
