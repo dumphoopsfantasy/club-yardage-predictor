@@ -132,7 +132,14 @@ export default function Calculator() {
   return (
     <div className="max-w-lg mx-auto px-4 pt-4">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold tracking-tight">Dump Golf</h1>
+        {settings.theme === "dump" ? (
+          <div className="flex items-center gap-2">
+            <img src={greeceLogo} alt="Dump Golf" className="h-8 w-auto" />
+            <h1 className="text-xl font-bold tracking-tight">Dump Golf</h1>
+          </div>
+        ) : (
+          <h1 className="text-xl font-bold tracking-tight">Dump Golf</h1>
+        )}
         {weatherLoading && (
           <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
         )}

@@ -32,13 +32,6 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Greece theme logo header */}
-      {state.settings.theme === "greece" && (
-        <div className="flex items-center justify-center pt-4 pb-2">
-          <img src={greeceLogo} alt="Dump Golf" className="h-14 w-auto" />
-        </div>
-      )}
-
       {/* Screen content */}
       <main className="flex-1 pb-20">
         {activeTab === "calculator" && <Calculator />}
