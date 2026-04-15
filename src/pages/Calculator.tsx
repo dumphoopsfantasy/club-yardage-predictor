@@ -15,7 +15,7 @@ type Rough = EnvironmentalConditions["rough"];
 
 export default function Calculator() {
   const { state } = useApp();
-  const { clubs, calibrations } = state;
+  const { clubs, calibrations, settings } = state;
 
   const [distance, setDistance] = useState<string>("");
   const [elevation, setElevation] = useState(0);
