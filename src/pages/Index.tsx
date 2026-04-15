@@ -5,7 +5,7 @@ import MyBag from "@/pages/MyBag";
 import Rounds from "@/pages/Rounds";
 import Settings from "@/pages/Settings";
 import { Crosshair, ShoppingBag, Flag, SettingsIcon } from "lucide-react";
-import greeceLogo from "@/assets/logo-greece.png";
+
 
 type Tab = "calculator" | "bag" | "rounds" | "settings";
 
@@ -15,11 +15,11 @@ export default function Index() {
 
   // Sync theme class with state
   useEffect(() => {
-    document.documentElement.classList.remove("dark", "greece");
+    document.documentElement.classList.remove("dark", "dump");
     if (state.settings.theme === "dark") {
       document.documentElement.classList.add("dark");
-    } else if (state.settings.theme === "greece") {
-      document.documentElement.classList.add("greece");
+    } else if (state.settings.theme === "dump") {
+      document.documentElement.classList.add("dump");
     }
   }, [state.settings.theme]);
 
@@ -32,13 +32,6 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Greece theme logo header */}
-      {state.settings.theme === "greece" && (
-        <div className="flex items-center justify-center pt-4 pb-2">
-          <img src={greeceLogo} alt="Dump Golf" className="h-14 w-auto" />
-        </div>
-      )}
-
       {/* Screen content */}
       <main className="flex-1 pb-20">
         {activeTab === "calculator" && <Calculator />}
