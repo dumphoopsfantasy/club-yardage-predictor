@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useCallback, useRef, type ReactNode } from "react";
+import { createContext, useContext, useReducer, useCallback, useRef, useEffect, type ReactNode } from "react";
 import type { Club, Calibration, Round, Shot, AppSettings } from "@/lib/types";
 
 interface AppState {
@@ -30,6 +30,8 @@ const defaultSettings: AppSettings = {
   tempUnit: "fahrenheit",
 };
 
+const STORAGE_KEY = "dumpgolf_app_state";
+
 const initialState: AppState = {
   clubs: [],
   calibrations: [],
@@ -37,6 +39,23 @@ const initialState: AppState = {
   shots: [],
   settings: defaultSettings,
 };
+
+function loadState(): AppState {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return { ...initialState, ...parsed, settings: { ...defaultSettings, ...parsed.settings } };
+    }
+  } catch {}
+  return initialState;
+}
+
+function saveState(state: AppState) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {}
+}
 
 function appReducer(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -147,9 +166,14 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(appReducer, initialState);
+  const [state, dispatch] = useReducer(appReducer, undefined, loadState);
   const stateRef = useRef(state);
   stateRef.current = state;
+
+  // Persist to localStorage on every state change
+  useEffect(() => {
+    saveState(state);
+  }, [state]);
 
   const addClubs = useCallback((clubs: Omit<Club, "id" | "sortOrder" | "createdAt">[]) => {
     dispatch({ type: "ADD_CLUBS", clubs });
