@@ -1457,6 +1457,50 @@ export const clubCatalog: CatalogEntry[] = [
       { name: "62°", loft: 62, type: "wedge" },
     ],
   },
+  {
+    brand: "Cleveland",
+    model: "RTX 3",
+    year: 2017,
+    variant: "V-MG",
+    clubs: [
+      { name: "46\u00b0", loft: 46, type: "wedge" },
+      { name: "48\u00b0", loft: 48, type: "wedge" },
+      { name: "50\u00b0", loft: 50, type: "wedge" },
+      { name: "52\u00b0", loft: 52, type: "wedge" },
+      { name: "54\u00b0", loft: 54, type: "wedge" },
+      { name: "56\u00b0", loft: 56, type: "wedge" },
+      { name: "58\u00b0", loft: 58, type: "wedge" },
+      { name: "60\u00b0", loft: 60, type: "wedge" },
+    ],
+  },
+  {
+    brand: "Cleveland",
+    model: "CG10",
+    year: 2006,
+    clubs: [
+      { name: "46\u00b0", loft: 46, type: "wedge" },
+      { name: "48\u00b0", loft: 48, type: "wedge" },
+      { name: "50\u00b0", loft: 50, type: "wedge" },
+      { name: "52\u00b0", loft: 52, type: "wedge" },
+      { name: "54\u00b0", loft: 54, type: "wedge" },
+      { name: "56\u00b0", loft: 56, type: "wedge" },
+      { name: "58\u00b0", loft: 58, type: "wedge" },
+      { name: "60\u00b0", loft: 60, type: "wedge" },
+    ],
+  },
+
+  // ============================================================
+  // DUNLOP
+  // ============================================================
+  {
+    brand: "Dunlop",
+    model: "True Tech",
+    year: 2005,
+    variant: "Trouble",
+    clubs: [
+      { name: "60\u00b0", loft: 60, type: "wedge" },
+    ],
+  },
 
   // ============================================================
   // SRIXON
