@@ -175,18 +175,7 @@ export default function Calculator() {
                   type="number"
                   inputMode="numeric"
                   value={slopeDistance}
-                  onChange={(e) => {
-                    setSlopeDistance(e.target.value);
-                    const slope = parseInt(e.target.value) || 0;
-                    const flat = parseInt(distance) || 0;
-                    if (slope > 0 && flat > 0 && slope >= flat) {
-                      const elevYds = Math.sqrt(slope * slope - flat * flat);
-                      const elevFt = Math.round(elevYds * 3);
-                      setElevation(flat < slope ? -elevFt : 0);
-                    } else {
-                      setElevation(0);
-                    }
-                  }}
+                  onChange={(e) => setSlopeDistance(e.target.value)}
                   placeholder="155"
                   className="w-full h-14 text-3xl font-bold text-center tabular-nums bg-card border border-border rounded-xl px-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground/30"
                 />
@@ -205,18 +194,7 @@ export default function Calculator() {
                   type="number"
                   inputMode="numeric"
                   value={distance}
-                  onChange={(e) => {
-                    setDistance(e.target.value);
-                    const flat = parseInt(e.target.value) || 0;
-                    const slope = parseInt(slopeDistance) || 0;
-                    if (slope > 0 && flat > 0 && slope >= flat) {
-                      const elevYds = Math.sqrt(slope * slope - flat * flat);
-                      const elevFt = Math.round(elevYds * 3);
-                      setElevation(flat < slope ? -elevFt : 0);
-                    } else {
-                      setElevation(0);
-                    }
-                  }}
+                  onChange={(e) => setDistance(e.target.value)}
                   placeholder="148"
                   className="w-full h-14 text-3xl font-bold text-center tabular-nums bg-card border border-border rounded-xl px-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground/30"
                 />
@@ -227,12 +205,10 @@ export default function Calculator() {
               <div className="text-[10px] text-muted-foreground mt-1 text-center">Small number</div>
             </div>
           </div>
-          {elevation !== 0 && (
-            <div className="flex items-center justify-center gap-1.5 mt-2">
-              <Mountain className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">
-                ≈ {Math.abs(elevation)}ft {elevation < 0 ? "downhill" : "uphill"}
-              </span>
+          {slopeDistance && distance && slopeDistance !== distance && (
+            <div className="text-center mt-2 text-xs text-muted-foreground">
+              {parseInt(slopeDistance) > parseInt(distance) ? "↓" : "↑"}{" "}
+              {Math.abs((parseInt(slopeDistance) || 0) - (parseInt(distance) || 0))} yard slope adjustment
             </div>
           )}
         </div>
