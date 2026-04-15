@@ -9,13 +9,13 @@ export default function Settings() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleThemeChange = (theme: "dark" | "light" | "greece") => {
+  const handleThemeChange = (theme: "dark" | "light" | "dump") => {
     updateSettings({ theme });
-    document.documentElement.classList.remove("dark", "greece");
+    document.documentElement.classList.remove("dark", "dump");
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
-    } else if (theme === "greece") {
-      document.documentElement.classList.add("greece");
+    } else if (theme === "dump") {
+      document.documentElement.classList.add("dump");
     }
   };
 
@@ -43,11 +43,11 @@ export default function Settings() {
       const text = await file.text();
       const data = JSON.parse(text);
       importData(data);
-      document.documentElement.classList.remove("dark", "greece");
+      document.documentElement.classList.remove("dark", "dump");
       if (data.settings?.theme === "dark") {
         document.documentElement.classList.add("dark");
-      } else if (data.settings?.theme === "greece") {
-        document.documentElement.classList.add("greece");
+      } else if (data.settings?.theme === "dump") {
+        document.documentElement.classList.add("dump");
       }
       toast.success("Data imported successfully");
     } catch {
@@ -59,7 +59,7 @@ export default function Settings() {
 
   const handleReset = () => {
     resetAll();
-    document.documentElement.classList.remove("greece");
+    document.documentElement.classList.remove("dump");
     document.documentElement.classList.add("dark");
     setShowResetConfirm(false);
     toast.success("All data reset");
@@ -68,7 +68,7 @@ export default function Settings() {
   const themes = [
     { id: "light" as const, label: "Light", icon: Sun },
     { id: "dark" as const, label: "Dark", icon: Moon },
-    { id: "greece" as const, label: "Greece", icon: TreePine },
+    { id: "dump" as const, label: "Dump", icon: TreePine },
   ];
 
   return (
