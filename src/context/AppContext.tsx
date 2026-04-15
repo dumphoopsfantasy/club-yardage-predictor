@@ -171,7 +171,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   stateRef.current = state;
 
   // Persist to localStorage on every state change
-  React.useEffect(() => {
+  useEffect(() => {
     saveState(state);
   }, [state]);
 
