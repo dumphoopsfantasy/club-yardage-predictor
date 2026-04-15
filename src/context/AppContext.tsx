@@ -166,9 +166,14 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(appReducer, initialState);
+  const [state, dispatch] = useReducer(appReducer, undefined, loadState);
   const stateRef = useRef(state);
   stateRef.current = state;
+
+  // Persist to localStorage on every state change
+  React.useEffect(() => {
+    saveState(state);
+  }, [state]);
 
   const addClubs = useCallback((clubs: Omit<Club, "id" | "sortOrder" | "createdAt">[]) => {
     dispatch({ type: "ADD_CLUBS", clubs });
