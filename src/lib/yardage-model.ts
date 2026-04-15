@@ -9,6 +9,8 @@ export interface EnvironmentalConditions {
   lie: "flat" | "above_feet" | "below_feet" | "uphill" | "downhill";
   lieSeverity: "slight" | "medium" | "severe";
   rough: "fairway" | "light_rough" | "heavy_rough" | "buried";
+  teed: boolean;
+  ground: "dry" | "damp" | "wet" | "rain";
 }
 
 export interface YardageResult {
@@ -151,6 +153,44 @@ export function calculatePlaysAs(
             ? "Heavy rough"
             : "Buried lie";
       adjustments.push({ label: roughLabel, yards: roughYards });
+    }
+  }
+
+  // Tee shot adjustment: cleaner strike, less grass interference
+  // Irons off a tee gain ~3-5% distance, wedges ~1-2%
+  if (conditions.teed) {
+    const teePercent = targetDistance > 160 ? -0.04 : targetDistance > 120 ? -0.03 : -0.02;
+    const teeYards = Math.round(targetDistance * teePercent);
+    if (teeYards !== 0) {
+      playsAs += teeYards;
+      adjustments.push({ label: "Off the tee", yards: teeYards });
+    }
+  }
+
+  // Ground conditions adjustment
+  // Wet conditions: less spin = flyer effect (ball goes farther through air)
+  // But soft ground = less roll, ball plugs. Net effect on "plays like":
+  // Damp: roughly neutral, slight flyer. Wet: noticeable flyer but no roll.
+  // Rain: flyer + drag cancel somewhat, but soft landing = less total distance.
+  if (conditions.ground !== "dry") {
+    let groundYards = 0;
+    let groundLabel = "";
+    if (conditions.ground === "damp") {
+      // Slight flyer, slightly less roll — roughly wash
+      groundYards = -Math.round(targetDistance * 0.01);
+      groundLabel = "Damp conditions";
+    } else if (conditions.ground === "wet") {
+      // Flyer carries farther but no roll — plays shorter overall
+      groundYards = Math.round(targetDistance * 0.03);
+      groundLabel = "Wet ground";
+    } else if (conditions.ground === "rain") {
+      // Flyer + rain drag + soft landing — plays longer
+      groundYards = Math.round(targetDistance * 0.05);
+      groundLabel = "Rain";
+    }
+    if (groundYards !== 0) {
+      playsAs += groundYards;
+      adjustments.push({ label: groundLabel, yards: groundYards });
     }
   }
 

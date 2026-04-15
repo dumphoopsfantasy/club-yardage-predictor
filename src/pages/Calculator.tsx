@@ -29,6 +29,8 @@ export default function Calculator() {
   const [lie, setLie] = useState<Lie>("flat");
   const [lieSeverity, setLieSeverity] = useState<LieSeverity>("slight");
   const [rough, setRough] = useState<Rough>("fairway");
+  const [teed, setTeed] = useState(false);
+  const [ground, setGround] = useState<EnvironmentalConditions["ground"]>("dry");
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [expandConditions, setExpandConditions] = useState(false);
 
@@ -81,6 +83,8 @@ export default function Calculator() {
     lie,
     lieSeverity,
     rough,
+    teed,
+    ground,
   };
 
   const result = useMemo(() => {
@@ -101,8 +105,10 @@ export default function Calculator() {
     }
     if (lie !== "flat") badges.push(lie.replace("_", " "));
     if (rough !== "fairway") badges.push(rough.replace("_", " "));
+    if (teed) badges.push("tee shot");
+    if (ground !== "dry") badges.push(ground);
     return badges;
-  }, [windSpeed, windDirection, elevation, lie, rough, useRangefinder, slopeDistance, distance]);
+  }, [windSpeed, windDirection, elevation, lie, rough, teed, ground, useRangefinder, slopeDistance, distance]);
 
   const stepElevation = useCallback((delta: number) => {
     setElevation((prev) => prev + delta);
@@ -323,7 +329,7 @@ export default function Calculator() {
         onClick={() => setExpandConditions(!expandConditions)}
         className="w-full flex items-center justify-center gap-1.5 py-2 mb-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
       >
-        {expandConditions ? "Less conditions" : "More conditions (lie, rough, temp)"}
+        {expandConditions ? "Less conditions" : "More conditions (lie, rough, tee, ground)"}
         {expandConditions ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
       </button>
 
@@ -413,6 +419,54 @@ export default function Calculator() {
                   }`}
                 >
                   {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tee Shot */}
+          <div className="bg-card border border-border rounded-xl p-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+                Off the Tee
+              </span>
+              <button
+                onClick={() => setTeed(!teed)}
+                className={`relative w-12 h-7 rounded-full transition-colors ${
+                  teed ? "bg-primary" : "bg-secondary"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-white transition-transform ${
+                    teed ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+            {teed && (
+              <p className="text-[11px] text-muted-foreground mt-1.5">
+                Cleaner strike off a tee — plays a few yards shorter
+              </p>
+            )}
+          </div>
+
+          {/* Ground Conditions */}
+          <div className="bg-card border border-border rounded-xl p-3">
+            <span className="block text-xs text-muted-foreground uppercase tracking-wider font-medium mb-2">
+              Ground
+            </span>
+            <div className="flex gap-2">
+              {(["dry", "damp", "wet", "rain"] as const).map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => setGround(opt)}
+                  className={`flex-1 h-11 rounded-lg text-sm font-medium transition-colors capitalize ${
+                    ground === opt
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  }`}
+                >
+                  {opt === "rain" ? "🌧️ Rain" : opt.charAt(0).toUpperCase() + opt.slice(1)}
                 </button>
               ))}
             </div>
