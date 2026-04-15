@@ -137,9 +137,9 @@ export function calculatePlaysAs(
   // Rough adjustment
   if (conditions.rough !== "fairway") {
     let roughPercent = 0;
-    if (conditions.rough === "light_rough") roughPercent = -0.05;
-    else if (conditions.rough === "heavy_rough") roughPercent = -0.15;
-    else if (conditions.rough === "buried") roughPercent = -0.25;
+    if (conditions.rough === "light_rough") roughPercent = 0.05;
+    else if (conditions.rough === "heavy_rough") roughPercent = 0.15;
+    else if (conditions.rough === "buried") roughPercent = 0.25;
 
     const roughYards = Math.round(targetDistance * roughPercent);
     if (roughYards !== 0) {
