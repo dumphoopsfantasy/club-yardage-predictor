@@ -9,14 +9,10 @@ export default function Settings() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleThemeChange = (theme: "dark" | "light" | "dump") => {
+  const handleThemeChange = (theme: "dump" | "dump-dark" | "dump-green") => {
     updateSettings({ theme });
-    document.documentElement.classList.remove("dark", "dump");
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else if (theme === "dump") {
-      document.documentElement.classList.add("dump");
-    }
+    document.documentElement.classList.remove("dump", "dump-dark", "dump-green");
+    document.documentElement.classList.add(theme);
   };
 
   const handleExport = () => {
@@ -43,12 +39,9 @@ export default function Settings() {
       const text = await file.text();
       const data = JSON.parse(text);
       importData(data);
-      document.documentElement.classList.remove("dark", "dump");
-      if (data.settings?.theme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else if (data.settings?.theme === "dump") {
-        document.documentElement.classList.add("dump");
-      }
+      document.documentElement.classList.remove("dump", "dump-dark", "dump-green");
+      const theme = data.settings?.theme || "dump";
+      document.documentElement.classList.add(theme);
       toast.success("Data imported successfully");
     } catch {
       toast.error("Import failed - invalid file format");
@@ -59,16 +52,16 @@ export default function Settings() {
 
   const handleReset = () => {
     resetAll();
-    document.documentElement.classList.remove("dump");
-    document.documentElement.classList.add("dark");
+    document.documentElement.classList.remove("dump-dark", "dump-green");
+    document.documentElement.classList.add("dump");
     setShowResetConfirm(false);
     toast.success("All data reset");
   };
 
   const themes = [
-    { id: "light" as const, label: "Light", icon: Sun },
-    { id: "dark" as const, label: "Dark", icon: Moon },
-    { id: "dump" as const, label: "Dump", icon: TreePine },
+    { id: "dump" as const, label: "Dump", icon: Sun },
+    { id: "dump-dark" as const, label: "Dark", icon: Moon },
+    { id: "dump-green" as const, label: "Green", icon: TreePine },
   ];
 
   return (

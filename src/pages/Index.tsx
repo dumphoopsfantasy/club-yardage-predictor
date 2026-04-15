@@ -15,12 +15,8 @@ export default function Index() {
 
   // Sync theme class with state
   useEffect(() => {
-    document.documentElement.classList.remove("dark", "dump");
-    if (state.settings.theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else if (state.settings.theme === "dump") {
-      document.documentElement.classList.add("dump");
-    }
+    document.documentElement.classList.remove("dump", "dump-dark", "dump-green");
+    document.documentElement.classList.add(state.settings.theme);
   }, [state.settings.theme]);
 
   const tabs: { id: Tab; label: string; icon: typeof Crosshair }[] = [

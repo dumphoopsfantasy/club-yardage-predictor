@@ -25,7 +25,7 @@ type Action =
   | { type: "RESET_ALL" };
 
 const defaultSettings: AppSettings = {
-  theme: "dark",
+  theme: "dump",
   units: "yards",
   tempUnit: "fahrenheit",
 };
