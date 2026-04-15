@@ -41,7 +41,7 @@ export interface Shot {
 }
 
 export interface AppSettings {
-  theme: "dark" | "light" | "dump";
+  theme: "dump" | "dump-dark" | "dump-green";
   units: "yards" | "meters";
   tempUnit: "fahrenheit" | "celsius";
 }

@@ -2,87 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE */
-:root {
-  --background: 220 20% 97%;
-  --foreground: 228 15% 12%;
-  --border: 220 10% 85%;
-  --card: 220 15% 95%;
-  --card-foreground: 228 15% 12%;
-  --card-border: 220 10% 88%;
-  --popover: 220 15% 93%;
-  --popover-foreground: 228 15% 12%;
-  --popover-border: 220 10% 85%;
-  --primary: 160 84% 39%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 220 10% 90%;
-  --secondary-foreground: 228 15% 12%;
-  --muted: 220 10% 92%;
-  --muted-foreground: 220 5% 45%;
-  --accent: 220 14% 89%;
-  --accent-foreground: 228 15% 12%;
-  --destructive: 0 84% 42%;
-  --destructive-foreground: 0 0% 98%;
-  --input: 220 10% 78%;
-  --ring: 160 84% 39%;
-  --sidebar: 220 15% 95%;
-  --sidebar-foreground: 228 15% 12%;
-  --sidebar-border: 220 10% 88%;
-  --sidebar-primary: 160 84% 39%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 220 10% 87%;
-  --sidebar-accent-foreground: 228 15% 12%;
-  --sidebar-ring: 160 84% 39%;
-  --chart-1: 160 84% 39%;
-  --chart-2: 43 96% 56%;
-  --chart-3: 221 83% 53%;
-  --chart-4: 280 67% 50%;
-  --chart-5: 27 87% 55%;
-  --font-sans: "Inter", sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: "JetBrains Mono", monospace;
-  --radius: 0.625rem;
-}
-
-/* DARK MODE - Golf Premium Dark Theme */
-.dark {
-  --background: 228 25% 7%;
-  --foreground: 210 20% 95%;
-  --border: 226 15% 18%;
-  --card: 228 20% 11%;
-  --card-foreground: 210 20% 95%;
-  --card-border: 226 15% 15%;
-  --popover: 228 18% 13%;
-  --popover-foreground: 210 20% 95%;
-  --popover-border: 226 15% 18%;
-  --primary: 160 84% 39%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 226 15% 18%;
-  --secondary-foreground: 210 20% 95%;
-  --muted: 226 12% 20%;
-  --muted-foreground: 220 8% 55%;
-  --accent: 226 12% 17%;
-  --accent-foreground: 210 20% 95%;
-  --destructive: 0 84% 50%;
-  --destructive-foreground: 0 0% 98%;
-  --input: 226 15% 22%;
-  --ring: 160 84% 39%;
-  --sidebar: 228 20% 9%;
-  --sidebar-foreground: 210 20% 95%;
-  --sidebar-border: 226 15% 15%;
-  --sidebar-primary: 160 84% 39%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 226 12% 17%;
-  --sidebar-accent-foreground: 210 20% 95%;
-  --sidebar-ring: 160 84% 39%;
-  --chart-1: 160 84% 45%;
-  --chart-2: 43 96% 60%;
-  --chart-3: 221 83% 65%;
-  --chart-4: 280 67% 60%;
-  --chart-5: 27 87% 65%;
-}
-
-/* GREECE THEME - Inspired by the golf logo */
+/* DUMP (DEFAULT) — Cream & Gold from the logo */
+:root,
 .dump {
   --background: 48 60% 95%;
   --foreground: 140 40% 12%;
@@ -118,6 +39,86 @@
   --chart-3: 0 70% 50%;
   --chart-4: 160 50% 40%;
   --chart-5: 30 80% 50%;
+  --font-sans: "Inter", sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --radius: 0.625rem;
+}
+
+/* DUMP DARK — Dark background with logo cream/green/gold accents */
+.dump-dark {
+  --background: 40 20% 8%;
+  --foreground: 48 40% 90%;
+  --border: 40 15% 18%;
+  --card: 40 18% 12%;
+  --card-foreground: 48 40% 90%;
+  --card-border: 40 15% 16%;
+  --popover: 40 16% 14%;
+  --popover-foreground: 48 40% 90%;
+  --popover-border: 40 15% 18%;
+  --primary: 48 80% 55%;
+  --primary-foreground: 40 20% 8%;
+  --secondary: 40 15% 18%;
+  --secondary-foreground: 48 40% 90%;
+  --muted: 40 12% 20%;
+  --muted-foreground: 40 10% 50%;
+  --accent: 140 40% 25%;
+  --accent-foreground: 48 40% 90%;
+  --destructive: 0 84% 50%;
+  --destructive-foreground: 0 0% 98%;
+  --input: 40 15% 22%;
+  --ring: 48 80% 55%;
+  --sidebar: 40 18% 10%;
+  --sidebar-foreground: 48 40% 90%;
+  --sidebar-border: 40 15% 16%;
+  --sidebar-primary: 48 80% 55%;
+  --sidebar-primary-foreground: 40 20% 8%;
+  --sidebar-accent: 40 12% 17%;
+  --sidebar-accent-foreground: 48 40% 90%;
+  --sidebar-ring: 48 80% 55%;
+  --chart-1: 48 80% 55%;
+  --chart-2: 140 50% 45%;
+  --chart-3: 0 70% 55%;
+  --chart-4: 30 80% 55%;
+  --chart-5: 200 60% 55%;
+}
+
+/* DUMP GREEN — Deep green background with gold accents */
+.dump-green {
+  --background: 140 35% 10%;
+  --foreground: 48 50% 92%;
+  --border: 140 20% 20%;
+  --card: 140 30% 14%;
+  --card-foreground: 48 50% 92%;
+  --card-border: 140 20% 18%;
+  --popover: 140 28% 16%;
+  --popover-foreground: 48 50% 92%;
+  --popover-border: 140 20% 20%;
+  --primary: 48 80% 55%;
+  --primary-foreground: 140 35% 10%;
+  --secondary: 140 20% 20%;
+  --secondary-foreground: 48 50% 92%;
+  --muted: 140 18% 22%;
+  --muted-foreground: 140 10% 50%;
+  --accent: 48 70% 48%;
+  --accent-foreground: 140 35% 10%;
+  --destructive: 0 84% 50%;
+  --destructive-foreground: 0 0% 98%;
+  --input: 140 18% 24%;
+  --ring: 48 80% 55%;
+  --sidebar: 140 30% 12%;
+  --sidebar-foreground: 48 50% 92%;
+  --sidebar-border: 140 20% 18%;
+  --sidebar-primary: 48 80% 55%;
+  --sidebar-primary-foreground: 140 35% 10%;
+  --sidebar-accent: 140 20% 18%;
+  --sidebar-accent-foreground: 48 50% 92%;
+  --sidebar-ring: 48 80% 55%;
+  --chart-1: 48 80% 55%;
+  --chart-2: 140 50% 40%;
+  --chart-3: 0 70% 55%;
+  --chart-4: 200 60% 50%;
+  --chart-5: 30 80% 55%;
 }
 
 @layer base {
