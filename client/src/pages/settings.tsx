@@ -5,6 +5,7 @@ import type { Setting } from "@shared/schema";
 import {
   Sun,
   Moon,
+  Droplets,
   Download,
   Upload,
   Trash2,
@@ -39,14 +40,13 @@ export default function Settings() {
     },
   });
 
-  const handleThemeToggle = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
+  const handleThemeChange = (newTheme: string) => {
     updateSettingMutation.mutate({ key: "theme", value: newTheme });
-
+    document.documentElement.classList.remove("dark", "blue");
     if (newTheme === "dark") {
       document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
+    } else if (newTheme === "blue") {
+      document.documentElement.classList.add("blue");
     }
   };
 
@@ -108,20 +108,38 @@ export default function Settings() {
             <div>
               <div className="text-sm font-semibold">Theme</div>
               <div className="text-xs text-muted-foreground">
-                {theme === "dark" ? "Dark mode" : "Light mode"}
+                {theme === "dark" ? "Dark mode" : theme === "blue" ? "Blue mode" : "Light mode"}
               </div>
             </div>
-            <button
-              onClick={handleThemeToggle}
-              className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
-              data-testid="theme-toggle"
-            >
-              {theme === "dark" ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleThemeChange("light")}
+                className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+                  theme === "light" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                }`}
+                data-testid="theme-light"
+              >
+                <Sun className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleThemeChange("dark")}
+                className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+                  theme === "dark" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                }`}
+                data-testid="theme-dark"
+              >
+                <Moon className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleThemeChange("blue")}
+                className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+                  theme === "blue" ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                }`}
+                data-testid="theme-blue"
+              >
+                <Droplets className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
 

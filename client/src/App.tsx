@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Switch, Route, Router, useLocation } from "wouter";
 import { useHashLocation } from "wouter/use-hash-location";
 import { queryClient } from "./lib/queryClient";
@@ -9,6 +10,8 @@ import MyBag from "@/pages/my-bag";
 import Rounds from "@/pages/rounds";
 import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
+import { useQuery } from "@tanstack/react-query";
+import type { Setting } from "@shared/schema";
 import { Calculator as CalcIcon, Backpack, Flag, SettingsIcon } from "lucide-react";
 
 function BottomNav() {
@@ -51,6 +54,25 @@ function BottomNav() {
   );
 }
 
+function ThemeApplier() {
+  const { data: settings = [] } = useQuery<Setting[]>({
+    queryKey: ["/api/settings"],
+  });
+
+  useEffect(() => {
+    const themeSetting = settings.find((s) => s.key === "theme");
+    const theme = themeSetting?.value ?? "dark";
+    document.documentElement.classList.remove("dark", "blue");
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else if (theme === "blue") {
+      document.documentElement.classList.add("blue");
+    }
+  }, [settings]);
+
+  return null;
+}
+
 function AppRouter() {
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -71,6 +93,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
+        <ThemeApplier />
         <Router hook={useHashLocation}>
           <AppRouter />
         </Router>
