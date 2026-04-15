@@ -93,6 +93,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
+        <ThemeApplier />
         <Router hook={useHashLocation}>
           <AppRouter />
         </Router>
