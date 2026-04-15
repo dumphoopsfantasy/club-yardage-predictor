@@ -19,6 +19,8 @@ export default function Calculator() {
 
   const [distance, setDistance] = useState<string>("");
   const [elevation, setElevation] = useState(0);
+  const [useRangefinder, setUseRangefinder] = useState(true);
+  const [slopeDistance, setSlopeDistance] = useState<string>("");
   const [windSpeed, setWindSpeed] = useState(0);
   const [windDirection, setWindDirection] = useState<WindDir>("none");
   const [temperature, setTemperature] = useState(70);
@@ -72,7 +74,7 @@ export default function Calculator() {
   const conditions: EnvironmentalConditions = {
     windSpeed,
     windDirection,
-    elevationChange: elevation,
+    elevationChange: useRangefinder ? 0 : elevation,
     altitude,
     temperature,
     lie,
@@ -91,11 +93,15 @@ export default function Calculator() {
     const badges: string[] = [];
     if (windSpeed > 0 && windDirection !== "none")
       badges.push(`${windSpeed}mph ${windDirection}`);
-    if (elevation !== 0) badges.push(`${elevation > 0 ? "+" : ""}${elevation}ft`);
+    if (useRangefinder && slopeDistance && distance && slopeDistance !== distance) {
+      badges.push("Slope adjusted");
+    } else if (!useRangefinder && elevation !== 0) {
+      badges.push(`${elevation > 0 ? "+" : ""}${elevation}ft`);
+    }
     if (lie !== "flat") badges.push(lie.replace("_", " "));
     if (rough !== "fairway") badges.push(rough.replace("_", " "));
     return badges;
-  }, [windSpeed, windDirection, elevation, lie, rough]);
+  }, [windSpeed, windDirection, elevation, lie, rough, useRangefinder, slopeDistance, distance]);
 
   const stepElevation = useCallback((delta: number) => {
     setElevation((prev) => prev + delta);
@@ -132,80 +138,178 @@ export default function Calculator() {
         )}
       </div>
 
-      {/* Distance Input */}
-      <div className="mb-4">
-        <label className="block text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider">
-          Distance to Pin
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            inputMode="numeric"
-            value={distance}
-            onChange={(e) => setDistance(e.target.value)}
-            placeholder="150"
-            className="w-full h-16 text-4xl font-bold text-center tabular-nums bg-card border border-border rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground/30"
-          />
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
-            yds
-          </span>
-        </div>
+      {/* Input Mode Toggle */}
+      <div className="flex bg-card border border-border rounded-lg p-0.5 mb-4">
+        <button
+          onClick={() => { setUseRangefinder(true); setElevation(0); }}
+          className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${
+            useRangefinder
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Rangefinder
+        </button>
+        <button
+          onClick={() => { setUseRangefinder(false); setSlopeDistance(""); }}
+          className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${
+            !useRangefinder
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Manual
+        </button>
       </div>
 
-      {/* Quick Conditions Row */}
-      <div className="grid grid-cols-2 gap-3 mb-3">
-        {/* Elevation */}
-        <div className="bg-card border border-border rounded-xl p-3">
-          <div className="flex items-center gap-1.5 mb-2">
-            <Mountain className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
-              Elevation
-            </span>
+      {useRangefinder ? (
+        /* Rangefinder Mode: Two inputs side by side */
+        <div className="mb-4">
+          <div className="flex items-stretch gap-3">
+            <div className="flex-1">
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider">
+                Slope Distance
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  value={slopeDistance}
+                  onChange={(e) => {
+                    setSlopeDistance(e.target.value);
+                    const slope = parseInt(e.target.value) || 0;
+                    const flat = parseInt(distance) || 0;
+                    if (slope > 0 && flat > 0 && slope >= flat) {
+                      const elevYds = Math.sqrt(slope * slope - flat * flat);
+                      const elevFt = Math.round(elevYds * 3);
+                      setElevation(flat < slope ? -elevFt : 0);
+                    } else {
+                      setElevation(0);
+                    }
+                  }}
+                  placeholder="155"
+                  className="w-full h-14 text-3xl font-bold text-center tabular-nums bg-card border border-border rounded-xl px-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground/30"
+                />
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground font-medium">
+                  yds
+                </span>
+              </div>
+              <div className="text-[10px] text-muted-foreground mt-1 text-center">Big number</div>
+            </div>
+            <div className="flex-1">
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider">
+                Plays Like
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  value={distance}
+                  onChange={(e) => {
+                    setDistance(e.target.value);
+                    const flat = parseInt(e.target.value) || 0;
+                    const slope = parseInt(slopeDistance) || 0;
+                    if (slope > 0 && flat > 0 && slope >= flat) {
+                      const elevYds = Math.sqrt(slope * slope - flat * flat);
+                      const elevFt = Math.round(elevYds * 3);
+                      setElevation(flat < slope ? -elevFt : 0);
+                    } else {
+                      setElevation(0);
+                    }
+                  }}
+                  placeholder="148"
+                  className="w-full h-14 text-3xl font-bold text-center tabular-nums bg-card border border-border rounded-xl px-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground/30"
+                />
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground font-medium">
+                  yds
+                </span>
+              </div>
+              <div className="text-[10px] text-muted-foreground mt-1 text-center">Small number</div>
+            </div>
           </div>
-          <div className="flex items-center justify-center gap-2">
-            <button
-              onClick={() => stepElevation(-3)}
-              className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
-            >
-              <ChevronDown className="w-4 h-4" />
-            </button>
-            <span className="text-lg font-bold tabular-nums min-w-[60px] text-center">
-              {elevation > 0 ? "+" : ""}{elevation}ft
-            </span>
-            <button
-              onClick={() => stepElevation(3)}
-              className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
-            >
-              <ChevronUp className="w-4 h-4" />
-            </button>
-          </div>
+          {elevation !== 0 && (
+            <div className="flex items-center justify-center gap-1.5 mt-2">
+              <Mountain className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">
+                ≈ {Math.abs(elevation)}ft {elevation < 0 ? "downhill" : "uphill"}
+              </span>
+            </div>
+          )}
         </div>
+      ) : (
+        /* Manual Mode: Single distance input + elevation stepper */
+        <>
+          <div className="mb-4">
+            <label className="block text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider">
+              Distance to Pin
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                inputMode="numeric"
+                value={distance}
+                onChange={(e) => setDistance(e.target.value)}
+                placeholder="150"
+                className="w-full h-16 text-4xl font-bold text-center tabular-nums bg-card border border-border rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground/30"
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
+                yds
+              </span>
+            </div>
+          </div>
 
-        {/* Wind Speed */}
-        <div className="bg-card border border-border rounded-xl p-3">
-          <div className="flex items-center gap-1.5 mb-2">
-            <Wind className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
-              Wind
-            </span>
+          <div className="bg-card border border-border rounded-xl p-3 mb-3">
+            <div className="flex items-center gap-1.5 mb-2">
+              <Mountain className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+                Elevation
+              </span>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <button
+                onClick={() => stepElevation(-3)}
+                className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+              >
+                <ChevronDown className="w-4 h-4" />
+              </button>
+              <span className="text-lg font-bold tabular-nums min-w-[60px] text-center">
+                {elevation > 0 ? "+" : ""}{elevation}ft
+              </span>
+              <button
+                onClick={() => stepElevation(3)}
+                className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+              >
+                <ChevronUp className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-          <div className="flex items-center justify-center gap-2">
-            <button
-              onClick={() => setWindSpeed(Math.max(0, windSpeed - 1))}
-              className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
-            >
-              <ChevronDown className="w-4 h-4" />
-            </button>
-            <span className="text-lg font-bold tabular-nums min-w-[50px] text-center">
-              {windSpeed}mph
-            </span>
-            <button
-              onClick={() => setWindSpeed(windSpeed + 1)}
-              className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
-            >
-              <ChevronUp className="w-4 h-4" />
-            </button>
-          </div>
+        </>
+      )}
+
+      {/* Wind Speed */}
+      <div className="bg-card border border-border rounded-xl p-3 mb-3">
+        <div className="flex items-center gap-1.5 mb-2">
+          <Wind className="w-3.5 h-3.5 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+            Wind
+          </span>
+        </div>
+        <div className="flex items-center justify-center gap-2">
+          <button
+            onClick={() => setWindSpeed(Math.max(0, windSpeed - 1))}
+            className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+          >
+            <ChevronDown className="w-4 h-4" />
+          </button>
+          <span className="text-lg font-bold tabular-nums min-w-[50px] text-center">
+            {windSpeed}mph
+          </span>
+          <button
+            onClick={() => setWindSpeed(windSpeed + 1)}
+            className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+          >
+            <ChevronUp className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
