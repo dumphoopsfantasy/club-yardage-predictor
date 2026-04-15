@@ -6,7 +6,7 @@ import {
   recommendClub,
   type EnvironmentalConditions,
 } from "@/lib/yardage-model";
-import { Wind, Thermometer, Mountain, ChevronUp, ChevronDown, MapPin, Loader2 } from "lucide-react";
+import { Wind, Thermometer, Mountain, ChevronUp, ChevronDown, Loader2 } from "lucide-react";
 
 type WindDir = EnvironmentalConditions["windDirection"];
 type Lie = EnvironmentalConditions["lie"];
@@ -366,33 +366,6 @@ export default function Calculator() {
               </span>
               <button
                 onClick={() => setTemperature(temperature + 5)}
-                className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
-              >
-                <ChevronUp className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Altitude */}
-          <div className="bg-card border border-border rounded-xl p-3">
-            <div className="flex items-center gap-1.5 mb-2">
-              <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
-                Altitude
-              </span>
-            </div>
-            <div className="flex items-center justify-center gap-2">
-              <button
-                onClick={() => setAltitude(Math.max(0, altitude - 500))}
-                className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
-              >
-                <ChevronDown className="w-4 h-4" />
-              </button>
-              <span className="text-lg font-bold tabular-nums min-w-[70px] text-center">
-                {altitude}ft
-              </span>
-              <button
-                onClick={() => setAltitude(altitude + 500)}
                 className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
               >
                 <ChevronUp className="w-4 h-4" />
