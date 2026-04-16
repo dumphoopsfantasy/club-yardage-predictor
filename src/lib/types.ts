@@ -40,7 +40,7 @@ export interface Shot {
   createdAt: string;
 }
 
-export type ClockPosition = "7:30" | "9:00" | "10:30" | "full";
+export type ClockPosition = "7:30" | "9:00" | "10:30";
 
 export interface ClockCalibration {
   id: number;

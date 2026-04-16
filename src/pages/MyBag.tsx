@@ -6,12 +6,11 @@ import { Plus, Trash2, Check, X, Target, Clock } from "lucide-react";
 import { toast } from "sonner";
 import type { ClockPosition } from "@/lib/types";
 
-const CLOCK_POSITIONS: ClockPosition[] = ["7:30", "9:00", "10:30", "full"];
+const CLOCK_POSITIONS: ClockPosition[] = ["7:30", "9:00", "10:30"];
 const CLOCK_LABELS: Record<ClockPosition, string> = {
   "7:30": "7:30",
   "9:00": "9:00",
   "10:30": "10:30",
-  "full": "Full",
 };
 
 export default function MyBag() {
@@ -452,7 +451,7 @@ export default function MyBag() {
 
                     {/* Clock position grid when editing */}
                     {isEditing && (
-                      <div className="grid grid-cols-4 gap-2 mt-3">
+                      <div className="grid grid-cols-3 gap-2 mt-3">
                         {CLOCK_POSITIONS.map((pos) => (
                           <div key={pos} className="text-center">
                             <div className="text-[10px] text-muted-foreground font-medium mb-1">
