@@ -10,7 +10,7 @@ import golfBagIcon from "@/assets/golf-bag-icon.jpeg";
 type Tab = "calculator" | "bag" | "settings";
 
 const GolfBagIcon = ({ className }: { className?: string }) => (
-  <img src={golfBagIcon} alt="My Bag" className={`${className} object-contain`} style={{ filter: "var(--golf-bag-filter, none)" }} />
+  <img src={golfBagIcon} alt="My Bag" className={`${className} object-contain`} />
 );
 
 export default function Index() {
