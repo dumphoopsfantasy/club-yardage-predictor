@@ -3,15 +3,9 @@ import { useApp } from "@/context/AppContext";
 import Calculator from "@/pages/Calculator";
 import MyBag from "@/pages/MyBag";
 import Settings from "@/pages/Settings";
-import { Crosshair, SettingsIcon } from "lucide-react";
-import golfBagIcon from "@/assets/golf-bag-icon.jpeg";
-
+import { Crosshair, ShoppingBag, SettingsIcon } from "lucide-react";
 
 type Tab = "calculator" | "bag" | "settings";
-
-const GolfBagIcon = ({ className }: { className?: string }) => (
-  <img src={golfBagIcon} alt="My Bag" className={`${className} object-contain`} />
-);
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState<Tab>("calculator");
