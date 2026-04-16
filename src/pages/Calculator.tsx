@@ -6,7 +6,7 @@ import {
   recommendClub,
   type EnvironmentalConditions,
 } from "@/lib/yardage-model";
-import { Wind, Thermometer, Mountain, ChevronUp, ChevronDown, Loader2 } from "lucide-react";
+import { Wind, Thermometer, Mountain, ChevronUp, ChevronDown, Loader2, LocateFixed } from "lucide-react";
 import dumpLogo from "@/assets/dump-logo.png";
 
 type WindDir = EnvironmentalConditions["windDirection"];
@@ -44,8 +44,7 @@ export default function Calculator() {
     [calibrations, clubs]
   );
 
-  // Fetch weather directly from Open-Meteo (no backend needed)
-  useEffect(() => {
+  const fetchWeather = useCallback(() => {
     if (!navigator.geolocation) return;
     setWeatherLoading(true);
     navigator.geolocation.getCurrentPosition(
@@ -71,6 +70,11 @@ export default function Calculator() {
       { timeout: 5000 }
     );
   }, []);
+
+  // Fetch weather on mount
+  useEffect(() => {
+    fetchWeather();
+  }, [fetchWeather]);
 
   const targetDist = parseInt(distance) || 0;
 
@@ -143,9 +147,18 @@ export default function Calculator() {
           <img src={dumpLogo} alt="Dump Golf" className="h-11 w-auto" />
           <h1 className="text-xl font-bold tracking-tight">Dump Golf</h1>
         </div>
-        {weatherLoading && (
-          <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-        )}
+        <button
+          onClick={fetchWeather}
+          disabled={weatherLoading}
+          className="flex items-center gap-1.5 px-3 h-9 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium hover:bg-secondary/80 transition-colors disabled:opacity-50"
+        >
+          {weatherLoading ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          ) : (
+            <LocateFixed className="w-3.5 h-3.5" />
+          )}
+          Live Conditions
+        </button>
       </div>
 
       {/* Input Mode Toggle */}
@@ -342,7 +355,7 @@ export default function Calculator() {
             </div>
             <div className="flex items-center justify-center gap-2">
               <button
-                onClick={() => setTemperature(temperature - 5)}
+                onClick={() => setTemperature(temperature - 1)}
                 className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
               >
                 <ChevronDown className="w-4 h-4" />
@@ -351,7 +364,7 @@ export default function Calculator() {
                 {temperature}&deg;F
               </span>
               <button
-                onClick={() => setTemperature(temperature + 5)}
+                onClick={() => setTemperature(temperature + 1)}
                 className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
               >
                 <ChevronUp className="w-4 h-4" />
