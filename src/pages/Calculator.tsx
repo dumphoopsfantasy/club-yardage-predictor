@@ -364,7 +364,7 @@ export default function Calculator() {
                 {temperature}&deg;F
               </span>
               <button
-                onClick={() => setTemperature(temperature + 5)}
+                onClick={() => setTemperature(temperature + 1)}
                 className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
               >
                 <ChevronUp className="w-4 h-4" />
