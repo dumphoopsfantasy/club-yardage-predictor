@@ -44,8 +44,7 @@ export default function Calculator() {
     [calibrations, clubs]
   );
 
-  // Fetch weather directly from Open-Meteo (no backend needed)
-  useEffect(() => {
+  const fetchWeather = useCallback(() => {
     if (!navigator.geolocation) return;
     setWeatherLoading(true);
     navigator.geolocation.getCurrentPosition(
@@ -71,6 +70,11 @@ export default function Calculator() {
       { timeout: 5000 }
     );
   }, []);
+
+  // Fetch weather on mount
+  useEffect(() => {
+    fetchWeather();
+  }, [fetchWeather]);
 
   const targetDist = parseInt(distance) || 0;
 
