@@ -6,7 +6,7 @@ import {
   recommendClub,
   type EnvironmentalConditions,
 } from "@/lib/yardage-model";
-import { Wind, Thermometer, Mountain, ChevronUp, ChevronDown, Loader2 } from "lucide-react";
+import { Wind, Thermometer, Mountain, ChevronUp, ChevronDown, Loader2, LocateFixed } from "lucide-react";
 import dumpLogo from "@/assets/dump-logo.png";
 
 type WindDir = EnvironmentalConditions["windDirection"];
