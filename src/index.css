@@ -2,6 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Clash Grotesk — Fontshare */
+@font-face {
+  font-family: 'Clash Grotesk';
+  src: url('/fonts/ClashGrotesk-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Clash Grotesk';
+  src: url('/fonts/ClashGrotesk-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Clash Grotesk';
+  src: url('/fonts/ClashGrotesk-Semibold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Clash Grotesk';
+  src: url('/fonts/ClashGrotesk-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* DUMP (DEFAULT) — Cream & Gold from the logo */
 :root,
 .dump {
@@ -39,7 +69,7 @@
   --chart-3: 0 70% 50%;
   --chart-4: 160 50% 40%;
   --chart-5: 30 80% 50%;
-  --font-sans: "Inter", sans-serif;
+  --font-sans: "Clash Grotesk", "Inter", sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: "JetBrains Mono", monospace;
   --radius: 0.625rem;
