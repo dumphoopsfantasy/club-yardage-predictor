@@ -40,6 +40,16 @@ export interface Shot {
   createdAt: string;
 }
 
+export type ClockPosition = "7:30" | "9:00" | "10:30" | "full";
+
+export interface ClockCalibration {
+  id: number;
+  clubId: number;
+  position: ClockPosition;
+  yardage: number;
+  createdAt: string;
+}
+
 export interface AppSettings {
   theme: "dump" | "dump-dark" | "dump-green";
   units: "yards" | "meters";

@@ -1,9 +1,10 @@
 import { createContext, useContext, useReducer, useCallback, useRef, useEffect, type ReactNode } from "react";
-import type { Club, Calibration, Round, Shot, AppSettings } from "@/lib/types";
+import type { Club, Calibration, ClockCalibration, ClockPosition, Round, Shot, AppSettings } from "@/lib/types";
 
 interface AppState {
   clubs: Club[];
   calibrations: Calibration[];
+  clockCalibrations: ClockCalibration[];
   rounds: Round[];
   shots: Shot[];
   settings: AppSettings;
@@ -16,6 +17,8 @@ type Action =
   | { type: "CLEAR_CLUBS" }
   | { type: "ADD_CALIBRATION"; calibration: Omit<Calibration, "id" | "createdAt"> }
   | { type: "REMOVE_CALIBRATION"; id: number }
+  | { type: "SET_CLOCK_CALIBRATION"; clockCal: { clubId: number; position: ClockPosition; yardage: number } }
+  | { type: "REMOVE_CLOCK_CALIBRATION"; clubId: number; position: ClockPosition }
   | { type: "ADD_ROUND"; round: Omit<Round, "id" | "createdAt"> }
   | { type: "REMOVE_ROUND"; id: number }
   | { type: "ADD_SHOT"; shot: Omit<Shot, "id" | "createdAt"> }
@@ -35,6 +38,7 @@ const STORAGE_KEY = "dumpgolf_app_state";
 const initialState: AppState = {
   clubs: [],
   calibrations: [],
+  clockCalibrations: [],
   rounds: [],
   shots: [],
   settings: defaultSettings,
@@ -75,6 +79,7 @@ function appReducer(state: AppState, action: Action): AppState {
         ...state,
         clubs: state.clubs.filter((c) => c.id !== action.id),
         calibrations: state.calibrations.filter((c) => c.clubId !== action.id),
+        clockCalibrations: state.clockCalibrations.filter((c) => c.clubId !== action.id),
       };
     case "TOGGLE_CLUB":
       return {
@@ -84,7 +89,7 @@ function appReducer(state: AppState, action: Action): AppState {
         ),
       };
     case "CLEAR_CLUBS":
-      return { ...state, clubs: [], calibrations: [] };
+      return { ...state, clubs: [], calibrations: [], clockCalibrations: [] };
     case "ADD_CALIBRATION": {
       const calId = state.calibrations.length > 0 ? Math.max(...state.calibrations.map((c) => c.id)) + 1 : 1;
       return {
@@ -99,6 +104,44 @@ function appReducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         calibrations: state.calibrations.filter((c) => c.id !== action.id),
+      };
+    case "SET_CLOCK_CALIBRATION": {
+      const existing = state.clockCalibrations.find(
+        (c) => c.clubId === action.clockCal.clubId && c.position === action.clockCal.position
+      );
+      if (existing) {
+        return {
+          ...state,
+          clockCalibrations: state.clockCalibrations.map((c) =>
+            c.id === existing.id
+              ? { ...c, yardage: action.clockCal.yardage }
+              : c
+          ),
+        };
+      }
+      const clockId = state.clockCalibrations.length > 0
+        ? Math.max(...state.clockCalibrations.map((c) => c.id)) + 1
+        : 1;
+      return {
+        ...state,
+        clockCalibrations: [
+          ...state.clockCalibrations,
+          {
+            id: clockId,
+            clubId: action.clockCal.clubId,
+            position: action.clockCal.position,
+            yardage: action.clockCal.yardage,
+            createdAt: new Date().toISOString(),
+          },
+        ],
+      };
+    }
+    case "REMOVE_CLOCK_CALIBRATION":
+      return {
+        ...state,
+        clockCalibrations: state.clockCalibrations.filter(
+          (c) => !(c.clubId === action.clubId && c.position === action.position)
+        ),
       };
     case "ADD_ROUND": {
       const roundId = state.rounds.length > 0 ? Math.max(...state.rounds.map((r) => r.id)) + 1 : 1;
@@ -153,6 +196,8 @@ interface AppContextType {
   clearClubs: () => void;
   addCalibration: (calibration: Omit<Calibration, "id" | "createdAt">) => void;
   removeCalibration: (id: number) => void;
+  setClockCalibration: (clubId: number, position: ClockPosition, yardage: number) => void;
+  removeClockCalibration: (clubId: number, position: ClockPosition) => void;
   addRound: (round: Omit<Round, "id" | "createdAt">) => Round;
   removeRound: (id: number) => void;
   addShot: (shot: Omit<Shot, "id" | "createdAt">) => void;
@@ -197,6 +242,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const removeCalibration = useCallback((id: number) => {
     dispatch({ type: "REMOVE_CALIBRATION", id });
+  }, []);
+
+  const setClockCalibration = useCallback((clubId: number, position: ClockPosition, yardage: number) => {
+    dispatch({ type: "SET_CLOCK_CALIBRATION", clockCal: { clubId, position, yardage } });
+  }, []);
+
+  const removeClockCalibration = useCallback((clubId: number, position: ClockPosition) => {
+    dispatch({ type: "REMOVE_CLOCK_CALIBRATION", clubId, position });
   }, []);
 
   const addRound = useCallback((round: Omit<Round, "id" | "createdAt">) => {
@@ -244,6 +297,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         clearClubs,
         addCalibration,
         removeCalibration,
+        setClockCalibration,
+        removeClockCalibration,
         addRound,
         removeRound,
         addShot,

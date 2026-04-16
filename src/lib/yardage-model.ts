@@ -1,4 +1,4 @@
-import type { Club, Calibration } from "./types";
+import type { Club, Calibration, ClockCalibration, ClockPosition } from "./types";
 
 export interface EnvironmentalConditions {
   windSpeed: number;
@@ -187,6 +187,45 @@ export function calculatePlaysAs(
   }
 
   return { playsAs: Math.round(playsAs), adjustments, aimOffset };
+}
+
+export interface ClockRecommendation {
+  club: Club;
+  position: ClockPosition;
+  calibratedYardage: number;
+  difference: number;
+}
+
+export function findClockPosition(
+  playsAs: number,
+  enabledClubs: Club[],
+  clockCalibrations: ClockCalibration[]
+): ClockRecommendation | null {
+  if (clockCalibrations.length === 0) return null;
+
+  const wedgeClubs = enabledClubs.filter((c) => c.clubType === "wedge");
+  if (wedgeClubs.length === 0) return null;
+
+  let best: ClockRecommendation | null = null;
+  let bestDiff = Infinity;
+
+  for (const club of wedgeClubs) {
+    const clubClocks = clockCalibrations.filter((cc) => cc.clubId === club.id);
+    for (const cc of clubClocks) {
+      const diff = Math.abs(cc.yardage - playsAs);
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        best = {
+          club,
+          position: cc.position,
+          calibratedYardage: cc.yardage,
+          difference: cc.yardage - playsAs,
+        };
+      }
+    }
+  }
+
+  return best;
 }
 
 export function recommendClub(

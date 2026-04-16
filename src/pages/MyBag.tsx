@@ -2,12 +2,21 @@ import { useState, useMemo } from "react";
 import { useApp } from "@/context/AppContext";
 import { getBrands, getModels, getClubsForModel } from "@/lib/club-catalog";
 import { calculatePDF, predictDistance } from "@/lib/yardage-model";
-import { Plus, Trash2, Check, X, Target } from "lucide-react";
+import { Plus, Trash2, Check, X, Target, Clock } from "lucide-react";
 import { toast } from "sonner";
+import type { ClockPosition } from "@/lib/types";
+
+const CLOCK_POSITIONS: ClockPosition[] = ["7:30", "9:00", "10:30", "full"];
+const CLOCK_LABELS: Record<ClockPosition, string> = {
+  "7:30": "7:30",
+  "9:00": "9:00",
+  "10:30": "10:30",
+  "full": "Full",
+};
 
 export default function MyBag() {
-  const { state, addClubs, removeClub, toggleClub, clearClubs, addCalibration, removeCalibration } = useApp();
-  const { clubs, calibrations } = state;
+  const { state, addClubs, removeClub, toggleClub, clearClubs, addCalibration, removeCalibration, setClockCalibration, removeClockCalibration } = useApp();
+  const { clubs, calibrations, clockCalibrations } = state;
 
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
@@ -19,6 +28,8 @@ export default function MyBag() {
   const [customName, setCustomName] = useState("");
   const [customLoft, setCustomLoft] = useState("");
   const [customType, setCustomType] = useState<string>("iron");
+  const [clockEditClub, setClockEditClub] = useState<number | null>(null);
+  const [clockInputs, setClockInputs] = useState<Record<string, string>>({});
 
   const brands = useMemo(() => getBrands(), []);
   const models = useMemo(
@@ -388,6 +399,114 @@ export default function MyBag() {
           >
             Add Custom Club
           </button>
+        </div>
+      )}
+
+      {/* Wedge Clock Calibration */}
+      {clubs.filter((c) => c.clubType === "wedge" && c.enabled).length > 0 && (
+        <div className="bg-card border border-border rounded-xl p-4 mb-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Clock className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold">Wedge Clock System</span>
+          </div>
+          <p className="text-xs text-muted-foreground mb-3">
+            Set yardages for each swing position on your wedges. Hit each position at the range and enter what you carry.
+          </p>
+          <div className="space-y-2">
+            {clubs
+              .filter((c) => c.clubType === "wedge" && c.enabled)
+              .map((club) => {
+                const clubClocks = clockCalibrations.filter((cc) => cc.clubId === club.id);
+                const isEditing = clockEditClub === club.id;
+                return (
+                  <div key={club.id} className="bg-secondary/30 rounded-lg p-3">
+                    <button
+                      onClick={() => {
+                        if (isEditing) {
+                          setClockEditClub(null);
+                          setClockInputs({});
+                        } else {
+                          setClockEditClub(club.id);
+                          const inputs: Record<string, string> = {};
+                          CLOCK_POSITIONS.forEach((pos) => {
+                            const existing = clubClocks.find((cc) => cc.position === pos);
+                            inputs[pos] = existing ? String(existing.yardage) : "";
+                          });
+                          setClockInputs(inputs);
+                        }
+                      }}
+                      className="w-full flex items-center justify-between"
+                    >
+                      <span className="text-sm font-medium">{club.name}</span>
+                      <div className="flex items-center gap-2">
+                        {clubClocks.length > 0 && !isEditing && (
+                          <span className="text-[10px] text-muted-foreground">
+                            {clubClocks.length}/{CLOCK_POSITIONS.length} set
+                          </span>
+                        )}
+                        <span className="text-xs text-primary font-medium">
+                          {isEditing ? "Done" : "Edit"}
+                        </span>
+                      </div>
+                    </button>
+
+                    {/* Clock position grid when editing */}
+                    {isEditing && (
+                      <div className="grid grid-cols-4 gap-2 mt-3">
+                        {CLOCK_POSITIONS.map((pos) => (
+                          <div key={pos} className="text-center">
+                            <div className="text-[10px] text-muted-foreground font-medium mb-1">
+                              {CLOCK_LABELS[pos]}
+                            </div>
+                            <input
+                              type="number"
+                              inputMode="numeric"
+                              placeholder="—"
+                              value={clockInputs[pos] || ""}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setClockInputs((prev) => ({ ...prev, [pos]: val }));
+                                if (val && parseInt(val) > 0) {
+                                  setClockCalibration(club.id, pos, parseInt(val));
+                                } else if (!val) {
+                                  removeClockCalibration(club.id, pos);
+                                }
+                              }}
+                              className="w-full h-9 bg-card border border-border rounded-lg text-sm font-bold text-center tabular-nums focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
+                            <div className="text-[9px] text-muted-foreground mt-0.5">yds</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Compact display when not editing */}
+                    {!isEditing && clubClocks.length > 0 && (
+                      <div className="flex gap-2 mt-2">
+                        {CLOCK_POSITIONS.map((pos) => {
+                          const cc = clubClocks.find((c) => c.position === pos);
+                          return (
+                            <div
+                              key={pos}
+                              className={`flex-1 text-center rounded-md py-1 ${
+                                cc ? "bg-primary/10 border border-primary/20" : "bg-secondary/50"
+                              }`}
+                            >
+                              <div className="text-[9px] text-muted-foreground">{CLOCK_LABELS[pos]}</div>
+                              <div className={`text-xs font-bold tabular-nums ${
+                                cc ? "text-primary" : "text-muted-foreground/30"
+                              }`}>
+                                {cc ? cc.yardage : "—"}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+          </div>
         </div>
       )}
 
