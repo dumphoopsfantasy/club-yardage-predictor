@@ -17,9 +17,9 @@ export default function Index() {
     document.documentElement.classList.add(state.settings.theme);
   }, [state.settings.theme]);
 
-  const tabs: { id: Tab; label: string; icon: typeof Crosshair | typeof GolfBagIcon }[] = [
+  const tabs: { id: Tab; label: string; icon: typeof Crosshair }[] = [
     { id: "calculator", label: "Calculator", icon: Crosshair },
-    { id: "bag", label: "My Bag", icon: GolfBagIcon },
+    { id: "bag", label: "My Bag", icon: ShoppingBag },
     { id: "settings", label: "Settings", icon: SettingsIcon },
   ];
 
