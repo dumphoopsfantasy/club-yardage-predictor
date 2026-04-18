@@ -206,6 +206,13 @@ export function findClockPosition(
   const wedgeClubs = enabledClubs.filter((c) => c.clubType === "wedge");
   if (wedgeClubs.length === 0) return null;
 
+  // Find the max calibrated clock yardage — if playsAs is above this, clock system doesn't apply
+  const allClockYardages = clockCalibrations
+    .filter((cc) => wedgeClubs.some((w) => w.id === cc.clubId))
+    .map((cc) => cc.yardage);
+  const maxClockYardage = Math.max(...allClockYardages);
+  if (playsAs > maxClockYardage + 5) return null;
+
   let best: ClockRecommendation | null = null;
   let bestDiff = Infinity;
 
