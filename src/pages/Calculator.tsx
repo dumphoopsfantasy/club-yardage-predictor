@@ -395,7 +395,7 @@ export default function Calculator() {
               </summary>
               <div className="space-y-0.5 mt-1.5">
                 <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">Actual distance</span>
+                  <span className="text-muted-foreground">Target distance</span>
                   <span className="tabular-nums font-medium">{targetDist} yds</span>
                 </div>
                 {result.adjustments.map((adj, i) => (
