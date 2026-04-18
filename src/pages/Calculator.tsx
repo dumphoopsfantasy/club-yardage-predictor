@@ -119,7 +119,14 @@ export default function Calculator() {
   const resetShot = useCallback(() => {
     setDistance("");
     setSlopeDistance("");
-    // Keep wind, ground, temp — those don't change between shots
+    setLie("flat");
+    setLieSeverity("medium");
+    setRough("fairway");
+    setWindDirection("none");
+    setWindSpeed(0);
+    setElevation(0);
+    setTeed(false);
+    // Keep temperature, altitude, ground — those are course/day conditions
     inputRef.current?.focus();
   }, []);
 
