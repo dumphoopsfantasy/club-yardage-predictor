@@ -7,7 +7,7 @@ import {
   type EnvironmentalConditions,
 } from "@/lib/yardage-model";
 import { Wind, Thermometer, ChevronUp, ChevronDown, Loader2, RotateCcw } from "lucide-react";
-import dumpLogo from "@/assets/dump-logo.png";
+import dumpLogo from "@/assets/dump-logo-transparent.png";
 
 type WindDir = EnvironmentalConditions["windDirection"];
 type Lie = EnvironmentalConditions["lie"];
