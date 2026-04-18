@@ -4,9 +4,7 @@ import {
   calculatePDF,
   calculatePlaysAs,
   recommendClub,
-  findClockPosition,
   type EnvironmentalConditions,
-  type ClockRecommendation,
 } from "@/lib/yardage-model";
 import { Wind, Thermometer, ChevronUp, ChevronDown, Loader2, RotateCcw } from "lucide-react";
 import dumpLogo from "@/assets/dump-logo.png";
@@ -94,9 +92,8 @@ export default function Calculator() {
   const result = useMemo(() => {
     if (targetDist <= 0) return null;
     const { playsAs, adjustments, aimOffset } = calculatePlaysAs(targetDist, conditions);
-    const rec = recommendClub(playsAs, enabledClubs, pdf);
-    const clockRec = findClockPosition(playsAs, enabledClubs, clockCalibrations);
-    return { playsAs, adjustments, aimOffset, clockRec, ...rec };
+    const rec = recommendClub(playsAs, enabledClubs, pdf, clockCalibrations);
+    return { playsAs, adjustments, aimOffset, ...rec };
   }, [targetDist, JSON.stringify(conditions), enabledClubs, pdf, clockCalibrations]);
 
   const activeBadges = useMemo(() => {
@@ -328,9 +325,9 @@ export default function Calculator() {
             {/* Club recommendation — right side */}
             {result.recommended ? (
               <div className="text-right">
-                <div className="text-2xl font-bold leading-tight">{result.recommended.name}</div>
+                <div className="text-2xl font-bold leading-tight">{result.recommended.label}</div>
                 <div className="text-xs text-muted-foreground">
-                  Stock: {result.stockYardage} yds &middot; {result.recommended.loft}&deg;
+                  {result.recommended.yardage} yds &middot; {result.recommended.club.loft}&deg;
                 </div>
               </div>
             ) : (
@@ -339,36 +336,6 @@ export default function Calculator() {
               </div>
             )}
           </div>
-
-          {/* Clock position recommendation for wedges */}
-          {result.clockRec && (
-            <div className="mt-3 bg-primary/5 border border-primary/20 rounded-xl px-4 py-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
-                    Clock System
-                  </div>
-                  <div className="text-lg font-bold text-primary">
-                    {result.clockRec.club.name} at {result.clockRec.position}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm font-semibold tabular-nums">
-                    {result.clockRec.calibratedYardage} yds
-                  </div>
-                  {result.clockRec.difference !== 0 && (
-                    <div className={`text-[10px] font-medium tabular-nums ${
-                      Math.abs(result.clockRec.difference) <= 3
-                        ? "text-emerald-500"
-                        : "text-amber-500"
-                    }`}>
-                      {result.clockRec.difference > 0 ? "+" : ""}{result.clockRec.difference} from target
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
 
           {result.aimOffset && (
             <div className="text-center mt-2 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 text-xs font-medium border border-amber-500/20">
@@ -380,8 +347,8 @@ export default function Calculator() {
             <div className="flex gap-2 mt-3">
               {result.alternatives.map((alt, i) => (
                 <div key={i} className="flex-1 text-center bg-secondary/50 rounded-lg py-1.5 px-2">
-                  <div className="text-xs font-semibold">{alt.club.name}</div>
-                  <div className="text-[10px] text-muted-foreground">{alt.stockYardage} yds</div>
+                  <div className="text-xs font-semibold">{alt.label}</div>
+                  <div className="text-[10px] text-muted-foreground">{alt.yardage} yds</div>
                 </div>
               ))}
             </div>

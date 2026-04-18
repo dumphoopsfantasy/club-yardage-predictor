@@ -235,51 +235,71 @@ export function findClockPosition(
   return best;
 }
 
+export interface ClubCandidate {
+  club: Club;
+  yardage: number;
+  label: string;
+  clockPosition?: ClockPosition;
+}
+
 export function recommendClub(
   playsAs: number,
   enabledClubs: Club[],
-  pdf: number
-): { recommended: Club | null; stockYardage: number; alternatives: { club: Club; stockYardage: number }[] } {
+  pdf: number,
+  clockCalibrations: ClockCalibration[] = []
+): { recommended: ClubCandidate | null; alternatives: ClubCandidate[] } {
   if (enabledClubs.length === 0) {
-    return { recommended: null, stockYardage: 0, alternatives: [] };
+    return { recommended: null, alternatives: [] };
   }
 
-  const clubDistances = enabledClubs
+  // Full-swing candidates
+  const candidates: ClubCandidate[] = enabledClubs
     .filter((c) => c.clubType !== "putter")
     .map((club) => ({
       club,
-      stockYardage: Math.round(predictDistance(club, pdf)),
-    }))
-    .sort((a, b) => b.stockYardage - a.stockYardage);
+      yardage: Math.round(predictDistance(club, pdf)),
+      label: club.name,
+    }));
 
-  if (clubDistances.length === 0) {
-    return { recommended: null, stockYardage: 0, alternatives: [] };
+  // Clock position candidates — each is a virtual "club"
+  for (const cc of clockCalibrations) {
+    const club = enabledClubs.find((c) => c.id === cc.clubId);
+    if (club && club.enabled) {
+      candidates.push({
+        club,
+        yardage: cc.yardage,
+        label: `${club.name} at ${cc.position}`,
+        clockPosition: cc.position,
+      });
+    }
+  }
+
+  candidates.sort((a, b) => b.yardage - a.yardage);
+
+  if (candidates.length === 0) {
+    return { recommended: null, alternatives: [] };
   }
 
   let bestIdx = 0;
-  let bestDiff = Math.abs(clubDistances[0].stockYardage - playsAs);
+  let bestDiff = Math.abs(candidates[0].yardage - playsAs);
 
-  for (let i = 1; i < clubDistances.length; i++) {
-    const diff = Math.abs(clubDistances[i].stockYardage - playsAs);
+  for (let i = 1; i < candidates.length; i++) {
+    const diff = Math.abs(candidates[i].yardage - playsAs);
     if (diff < bestDiff) {
       bestDiff = diff;
       bestIdx = i;
     }
   }
 
-  const recommended = clubDistances[bestIdx];
-  const alternatives: { club: Club; stockYardage: number }[] = [];
+  const recommended = candidates[bestIdx];
+  const alternatives: ClubCandidate[] = [];
 
   if (bestIdx > 0) {
-    alternatives.push(clubDistances[bestIdx - 1]);
+    alternatives.push(candidates[bestIdx - 1]);
   }
-  if (bestIdx < clubDistances.length - 1) {
-    alternatives.push(clubDistances[bestIdx + 1]);
+  if (bestIdx < candidates.length - 1) {
+    alternatives.push(candidates[bestIdx + 1]);
   }
 
-  return {
-    recommended: recommended.club,
-    stockYardage: recommended.stockYardage,
-    alternatives,
-  };
+  return { recommended, alternatives };
 }
