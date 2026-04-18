@@ -8,7 +8,7 @@ export interface EnvironmentalConditions {
   temperature: number;
   lie: "flat" | "above_feet" | "below_feet" | "uphill" | "downhill";
   lieSeverity: "slight" | "medium" | "severe";
-  rough: "fairway" | "light_rough" | "heavy_rough" | "buried";
+  rough: "fairway" | "light_rough" | "heavy_rough" | "buried" | "flyer";
   teed: boolean;
   ground: "dry" | "soft" | "rain";
 }
@@ -58,6 +58,9 @@ export function calculatePlaysAs(
   let aimOffset: string | null = null;
 
   // Wind adjustment
+  // Headwind: +1% per mph (industry standard — Arccos, Galvin Green)
+  // Tailwind: -0.5% per mph
+  // Crosswind: no distance change, aim offset instead
   if (conditions.windSpeed > 0 && conditions.windDirection !== "none") {
     let windYards = 0;
     if (conditions.windDirection === "into") {
@@ -65,15 +68,21 @@ export function calculatePlaysAs(
     } else if (conditions.windDirection === "with") {
       windYards = -(targetDistance * (conditions.windSpeed * 0.005));
     } else if (conditions.windDirection === "cross") {
-      windYards = targetDistance * (conditions.windSpeed * 0.002);
+      // Crosswind pushes ball sideways, not longer/shorter
+      const crossOffset = Math.round(conditions.windSpeed * 0.75);
+      if (crossOffset > 0) {
+        aimOffset = `Aim ${crossOffset} yards into the wind`;
+      }
     }
-    windYards = Math.round(windYards);
-    if (windYards !== 0) {
-      playsAs += windYards;
-      adjustments.push({
-        label: `Wind ${conditions.windSpeed}mph ${conditions.windDirection}`,
-        yards: windYards,
-      });
+    if (conditions.windDirection !== "cross") {
+      windYards = Math.round(windYards);
+      if (windYards !== 0) {
+        playsAs += windYards;
+        adjustments.push({
+          label: `Wind ${conditions.windSpeed}mph ${conditions.windDirection}`,
+          yards: windYards,
+        });
+      }
     }
   }
 
@@ -89,9 +98,12 @@ export function calculatePlaysAs(
     }
   }
 
-  // Altitude adjustment: +0.116% per 1000ft
+  // Altitude adjustment: ball flies ~1.16% farther per 1000ft above sea level
+  // Formula: altitude_ft * 0.00116 = percentage gain (e.g. 5000ft → 5.8%)
+  // This means the shot plays SHORTER (need less club) so we subtract from playsAs
   if (conditions.altitude > 0) {
-    const altYards = -Math.round(targetDistance * (conditions.altitude / 1000) * 0.00116);
+    const altPercent = conditions.altitude * 0.00116 / 100;
+    const altYards = -Math.round(targetDistance * altPercent);
     if (altYards !== 0) {
       playsAs += altYards;
       adjustments.push({
@@ -101,10 +113,15 @@ export function calculatePlaysAs(
     }
   }
 
-  // Temperature adjustment: ~2 yards per 10F from 70F baseline
+  // Temperature adjustment: scales by club distance
+  // Driver (~250yds): ~2 yds per 10°F from 70° baseline
+  // PW (~130yds): ~1.3 yds per 10°F
+  // Linear interpolation: yardsPerDegree = 0.006 * targetDistance / 10
+  // At 250yds → 0.15/°F → 1.5/10°F ≈ 2. At 130yds → 0.078/°F → 0.78/10°F ≈ 1.3
   if (conditions.temperature !== BASELINE_TEMP) {
     const tempDiff = BASELINE_TEMP - conditions.temperature;
-    const tempYards = Math.round((tempDiff / 10) * 2);
+    const yardsPerTenDeg = Math.max(1, targetDistance * 0.008);
+    const tempYards = Math.round((tempDiff / 10) * yardsPerTenDeg);
     if (tempYards !== 0) {
       playsAs += tempYards;
       adjustments.push({
@@ -114,44 +131,64 @@ export function calculatePlaysAs(
     }
   }
 
-  // Lie adjustments
+  // Lie adjustments — scaled by club loft
+  // Uphill adds effective loft → shorter (more so with low-loft clubs)
+  // Downhill removes loft → longer (more so with low-loft clubs)
+  // Sidehill → aim offset only
   if (conditions.lie !== "flat") {
     const severityMultiplier =
       conditions.lieSeverity === "slight" ? 0.5 : conditions.lieSeverity === "medium" ? 1 : 1.5;
 
+    // Loft scaling: low loft clubs (driver/long irons) are more affected by slope
+    // ~4° effective loft change per severity level
+    // Impact on distance is larger for low-loft clubs
+    // At 20° loft: ~8% per severity. At 45° loft: ~4% per severity.
+    const loftFactor = Math.max(0.03, 0.10 - (targetDistance < 100 ? 0.06 : targetDistance < 160 ? 0.04 : 0.02));
+
     if (conditions.lie === "uphill") {
-      const lieYards = Math.round(5 * severityMultiplier);
+      const lieYards = Math.round(targetDistance * loftFactor * severityMultiplier);
       playsAs += lieYards;
       adjustments.push({ label: `Uphill lie (${conditions.lieSeverity})`, yards: lieYards });
     } else if (conditions.lie === "downhill") {
-      const lieYards = -Math.round(5 * severityMultiplier);
+      const lieYards = -Math.round(targetDistance * loftFactor * severityMultiplier);
       playsAs += lieYards;
       adjustments.push({ label: `Downhill lie (${conditions.lieSeverity})`, yards: lieYards });
     } else if (conditions.lie === "above_feet") {
       const offset = Math.round(3 * severityMultiplier);
-      aimOffset = `Aim ${offset} yards right`;
+      const existingAim = aimOffset ? aimOffset + " / " : "";
+      aimOffset = `${existingAim}Aim ${offset} yards right (ball above feet)`;
     } else if (conditions.lie === "below_feet") {
       const offset = Math.round(3 * severityMultiplier);
-      aimOffset = `Aim ${offset} yards left`;
+      const existingAim = aimOffset ? aimOffset + " / " : "";
+      aimOffset = `${existingAim}Aim ${offset} yards left (ball below feet)`;
     }
   }
 
   // Rough adjustment
+  // Light rough: 5% distance loss
+  // Heavy rough: 15% distance loss
+  // Buried (into-grain): 20-25% loss
+  // Flyer (down-grain): 10-15% distance GAIN (reduced spin, ball jumps)
   if (conditions.rough !== "fairway") {
     let roughPercent = 0;
-    if (conditions.rough === "light_rough") roughPercent = 0.05;
-    else if (conditions.rough === "heavy_rough") roughPercent = 0.15;
-    else if (conditions.rough === "buried") roughPercent = 0.25;
+    let roughLabel = "";
+    if (conditions.rough === "light_rough") {
+      roughPercent = 0.05;
+      roughLabel = "Light rough";
+    } else if (conditions.rough === "heavy_rough") {
+      roughPercent = 0.15;
+      roughLabel = "Heavy rough";
+    } else if (conditions.rough === "buried") {
+      roughPercent = 0.22;
+      roughLabel = "Buried lie";
+    } else if (conditions.rough === "flyer") {
+      roughPercent = -0.12;
+      roughLabel = "Flyer lie";
+    }
 
     const roughYards = Math.round(targetDistance * roughPercent);
     if (roughYards !== 0) {
       playsAs += roughYards;
-      const roughLabel =
-        conditions.rough === "light_rough"
-          ? "Light rough"
-          : conditions.rough === "heavy_rough"
-            ? "Heavy rough"
-            : "Buried lie";
       adjustments.push({ label: roughLabel, yards: roughYards });
     }
   }

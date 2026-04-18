@@ -143,6 +143,7 @@ export default function Calculator() {
     { value: "light_rough", label: "Light" },
     { value: "heavy_rough", label: "Heavy" },
     { value: "buried", label: "Buried" },
+    { value: "flyer", label: "Flyer" },
   ];
 
   return (
