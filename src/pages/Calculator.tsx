@@ -74,16 +74,20 @@ export default function Calculator() {
   }, []);
 
   const playsLikeDist = parseInt(distance) || 0;
-  const slopeDist = parseInt(slopeDistance) || 0;
+  const straightLineDist = parseInt(slopeDistance) || 0;
 
-  // In rangefinder mode, work off the big number (slope distance) so slope
-  // becomes a visible line-item adjustment.  In manual mode, just use distance.
-  const baseDist = useRangefinder && slopeDist > 0 ? slopeDist : playsLikeDist;
+  // In rangefinder mode, work off the straight-line distance (what the laser
+  // actually measured) so slope becomes a visible adjustment line item.
+  // Percentage-based adjustments (wind, rough, etc.) scale off this distance.
+  const baseDist = useRangefinder && straightLineDist > 0 ? straightLineDist : playsLikeDist;
   const targetDist = baseDist;  // used for "has input" checks below
 
+  // Slope adjustment = plays-like minus straight-line
+  // Downhill: plays-like < straight-line → negative (plays shorter)
+  // Uphill:   plays-like > straight-line → positive (plays longer)
   const slopeAdjustment =
-    useRangefinder && slopeDist > 0 && playsLikeDist > 0 && slopeDist !== playsLikeDist
-      ? playsLikeDist - slopeDist   // e.g. 148 - 155 = -7
+    useRangefinder && straightLineDist > 0 && playsLikeDist > 0 && straightLineDist !== playsLikeDist
+      ? playsLikeDist - straightLineDist
       : 0;
 
   const conditions: EnvironmentalConditions = {
@@ -108,7 +112,7 @@ export default function Calculator() {
     let playsAs = rawPlaysAs;
     if (slopeAdjustment !== 0) {
       adjustments.unshift({
-        label: slopeAdjustment < 0 ? "Uphill to target" : "Downhill to target",
+        label: slopeAdjustment < 0 ? "Downhill to target" : "Uphill to target",
         yards: slopeAdjustment,
       });
       playsAs += slopeAdjustment;
@@ -123,7 +127,7 @@ export default function Calculator() {
     if (windSpeed > 0 && windDirection !== "none")
       badges.push(`${windSpeed}mph ${windDirection}`);
     if (useRangefinder && slopeDistance && distance && slopeDistance !== distance) {
-      badges.push("Slope adjusted");
+      badges.push(parseInt(distance) < parseInt(slopeDistance) ? "downhill" : "uphill");
     } else if (!useRangefinder && elevation !== 0) {
       badges.push(`${elevation > 0 ? "+" : ""}${elevation}ft`);
     }
@@ -228,7 +232,7 @@ export default function Calculator() {
           <div className="flex items-stretch gap-3">
             <div className="flex-1">
               <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase tracking-wider">
-                Slope Distance
+                Straight-line
               </label>
               <div className="relative">
                 <input
@@ -244,7 +248,7 @@ export default function Calculator() {
                   yds
                 </span>
               </div>
-              <div className="text-[10px] text-muted-foreground mt-0.5 text-center">Big number</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5 text-center">Laser distance</div>
             </div>
             <div className="flex-1">
               <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase tracking-wider">
@@ -264,13 +268,13 @@ export default function Calculator() {
                   yds
                 </span>
               </div>
-              <div className="text-[10px] text-muted-foreground mt-0.5 text-center">Small number</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5 text-center">Adjusted</div>
             </div>
           </div>
           {slopeDistance && distance && slopeDistance !== distance && (
             <div className="text-center mt-1.5 text-xs text-muted-foreground">
-              {parseInt(slopeDistance) > parseInt(distance) ? "↓" : "↑"}{" "}
-              {Math.abs((parseInt(slopeDistance) || 0) - (parseInt(distance) || 0))} yard slope adjustment
+              {parseInt(distance) < parseInt(slopeDistance) ? "↓ Downhill" : "↑ Uphill"}{" "}
+              {Math.abs((parseInt(slopeDistance) || 0) - (parseInt(distance) || 0))} yard adjustment
             </div>
           )}
         </div>
@@ -391,7 +395,7 @@ export default function Calculator() {
               <div className="space-y-0.5 mt-1.5">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">
-                    {useRangefinder && slopeDist > 0 ? "Slope distance" : "Target distance"}
+                    {useRangefinder && straightLineDist > 0 ? "Straight-line" : "Target distance"}
                   </span>
                   <span className="tabular-nums font-medium">{baseDist} yds</span>
                 </div>

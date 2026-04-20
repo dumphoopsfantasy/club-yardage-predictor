@@ -190,6 +190,14 @@ export function calculatePlaysAs(
       roughLabel = "Flyer lie";
     }
 
+    // Wet rough multiplier: rain makes grass heavier and clingier,
+    // increasing the rough penalty by ~40%. Doesn't apply to flyers
+    // (wet grass can actually cause flyers, already accounted for).
+    if (conditions.ground === "rain" && conditions.rough !== "flyer" && roughPercent > 0) {
+      roughPercent *= 1.4;
+      roughLabel += " (wet)";
+    }
+
     const roughYards = Math.round(targetDistance * roughPercent);
     if (roughYards !== 0) {
       playsAs += roughYards;
