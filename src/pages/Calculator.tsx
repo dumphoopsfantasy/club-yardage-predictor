@@ -121,11 +121,9 @@ export default function Calculator() {
     setLie("flat");
     setLieSeverity("medium");
     setRough("fairway");
-    setWindDirection("none");
-    setWindSpeed(0);
     setElevation(0);
     setTeed(false);
-    // Keep temperature, altitude, ground — those are course/day conditions
+    // Keep wind, temperature, altitude, ground — those are course/day conditions
     inputRef.current?.focus();
   }, []);
 
