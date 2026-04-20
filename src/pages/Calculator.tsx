@@ -73,7 +73,18 @@ export default function Calculator() {
     );
   }, []);
 
-  const targetDist = parseInt(distance) || 0;
+  const playsLikeDist = parseInt(distance) || 0;
+  const slopeDist = parseInt(slopeDistance) || 0;
+
+  // In rangefinder mode, work off the big number (slope distance) so slope
+  // becomes a visible line-item adjustment.  In manual mode, just use distance.
+  const baseDist = useRangefinder && slopeDist > 0 ? slopeDist : playsLikeDist;
+  const targetDist = baseDist;  // used for "has input" checks below
+
+  const slopeAdjustment =
+    useRangefinder && slopeDist > 0 && playsLikeDist > 0 && slopeDist !== playsLikeDist
+      ? playsLikeDist - slopeDist   // e.g. 148 - 155 = -7
+      : 0;
 
   const conditions: EnvironmentalConditions = {
     windSpeed,
@@ -89,11 +100,23 @@ export default function Calculator() {
   };
 
   const result = useMemo(() => {
-    if (targetDist <= 0) return null;
-    const { playsAs, adjustments, aimOffset } = calculatePlaysAs(targetDist, conditions);
+    if (baseDist <= 0) return null;
+    const { playsAs: rawPlaysAs, adjustments: rawAdj, aimOffset } = calculatePlaysAs(baseDist, conditions);
+
+    // Inject slope as the first adjustment when in rangefinder mode
+    const adjustments = [...rawAdj];
+    let playsAs = rawPlaysAs;
+    if (slopeAdjustment !== 0) {
+      adjustments.unshift({
+        label: slopeAdjustment < 0 ? "Uphill to target" : "Downhill to target",
+        yards: slopeAdjustment,
+      });
+      playsAs += slopeAdjustment;
+    }
+
     const rec = recommendClub(playsAs, enabledClubs, pdf, clockCalibrations);
     return { playsAs, adjustments, aimOffset, ...rec };
-  }, [targetDist, JSON.stringify(conditions), enabledClubs, pdf, clockCalibrations]);
+  }, [baseDist, slopeAdjustment, JSON.stringify(conditions), enabledClubs, pdf, clockCalibrations]);
 
   const activeBadges = useMemo(() => {
     const badges: string[] = [];
@@ -367,8 +390,10 @@ export default function Calculator() {
               </summary>
               <div className="space-y-0.5 mt-1.5">
                 <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">Target distance</span>
-                  <span className="tabular-nums font-medium">{targetDist} yds</span>
+                  <span className="text-muted-foreground">
+                    {useRangefinder && slopeDist > 0 ? "Slope distance" : "Target distance"}
+                  </span>
+                  <span className="tabular-nums font-medium">{baseDist} yds</span>
                 </div>
                 {result.adjustments.map((adj, i) => (
                   <div key={i} className="flex justify-between text-xs">
