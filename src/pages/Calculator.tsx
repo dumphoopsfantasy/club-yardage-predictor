@@ -32,7 +32,6 @@ export default function Calculator() {
   const [teed, setTeed] = useState(false);
   const [ground, setGround] = useState<EnvironmentalConditions["ground"]>("dry");
   const [weatherLoading, setWeatherLoading] = useState(false);
-  const [expandConditions, setExpandConditions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const slopeRef = useRef<HTMLInputElement>(null);
 
@@ -462,150 +461,144 @@ export default function Calculator() {
         )}
       </div>
 
-      {/* More Conditions Toggle */}
-      <button
-        onClick={() => setExpandConditions(!expandConditions)}
-        className="w-full flex items-center justify-center gap-1.5 py-2 mb-2 text-xs font-medium text-secondary-foreground bg-secondary border border-border rounded-lg hover:bg-secondary/80 transition-colors"
-      >
-        {expandConditions ? "Less conditions" : "More conditions (lie, rough, tee, ground)"}
-        {expandConditions ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-      </button>
+      {/* Temperature */}
+      <div className="flex items-center justify-between bg-card border border-border rounded-xl px-3 py-2 mb-2">
+        <div className="flex items-center gap-1.5">
+          <Thermometer className="w-3.5 h-3.5 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+            Temp
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setTemperature(temperature - 5)}
+            className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+          >
+            <ChevronDown className="w-3.5 h-3.5" />
+          </button>
+          <span className="text-sm font-bold tabular-nums min-w-[42px] text-center">
+            {temperature}&deg;F
+          </span>
+          <button
+            onClick={() => setTemperature(temperature + 5)}
+            className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+          >
+            <ChevronUp className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
 
-      {/* Expanded Conditions */}
-      {expandConditions && (
-        <div className="space-y-2 mb-4">
-          {/* Temperature */}
-          <div className="flex items-center justify-between bg-card border border-border rounded-xl px-3 py-2">
-            <div className="flex items-center gap-1.5">
-              <Thermometer className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
-                Temp
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
+      {/* Lie */}
+      <div className="bg-card border border-border rounded-xl p-3 mb-2">
+        <span className="block text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1.5">
+          Lie
+        </span>
+        <div className="flex flex-wrap gap-1.5">
+          {lieOptions.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setLie(opt.value)}
+              className={`h-8 px-2.5 rounded-lg text-xs font-medium transition-colors ${
+                lie === opt.value
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+        {lie !== "flat" && (
+          <div className="flex gap-1.5 mt-1.5">
+            {(["slight", "medium", "severe"] as LieSeverity[]).map((sev) => (
               <button
-                onClick={() => setTemperature(temperature - 5)}
-                className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+                key={sev}
+                onClick={() => setLieSeverity(sev)}
+                className={`flex-1 h-7 rounded-lg text-[10px] font-medium transition-colors capitalize ${
+                  lieSeverity === sev
+                    ? "bg-primary/20 text-primary border border-primary/30"
+                    : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+                }`}
               >
-                <ChevronDown className="w-3.5 h-3.5" />
+                {sev}
               </button>
-              <span className="text-sm font-bold tabular-nums min-w-[42px] text-center">
-                {temperature}&deg;F
-              </span>
-              <button
-                onClick={() => setTemperature(temperature + 5)}
-                className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
-              >
-                <ChevronUp className="w-3.5 h-3.5" />
-              </button>
-            </div>
+            ))}
           </div>
+        )}
+      </div>
 
-          {/* Lie */}
-          <div className="bg-card border border-border rounded-xl p-3">
-            <span className="block text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1.5">
-              Lie
+      {/* Rough */}
+      <div className="bg-card border border-border rounded-xl p-3 mb-2">
+        <span className="block text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1.5">
+          Rough
+        </span>
+        <div className="flex gap-1.5">
+          {roughOptions.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setRough(opt.value)}
+              className={`flex-1 h-8 rounded-lg text-xs font-medium transition-colors ${
+                rough === opt.value
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tee Shot + Ground — combined row */}
+      <div className="flex gap-2 mb-4">
+        <div className="flex-1 bg-card border border-border rounded-xl px-3 py-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
+              Off the Tee
             </span>
-            <div className="flex flex-wrap gap-1.5">
-              {lieOptions.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => setLie(opt.value)}
-                  className={`h-8 px-2.5 rounded-lg text-xs font-medium transition-colors ${
-                    lie === opt.value
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-            {lie !== "flat" && (
-              <div className="flex gap-1.5 mt-1.5">
-                {(["slight", "medium", "severe"] as LieSeverity[]).map((sev) => (
-                  <button
-                    key={sev}
-                    onClick={() => setLieSeverity(sev)}
-                    className={`flex-1 h-7 rounded-lg text-[10px] font-medium transition-colors capitalize ${
-                      lieSeverity === sev
-                        ? "bg-primary/20 text-primary border border-primary/30"
-                        : "bg-secondary text-muted-foreground hover:bg-secondary/80"
-                    }`}
-                  >
-                    {sev}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Rough */}
-          <div className="bg-card border border-border rounded-xl p-3">
-            <span className="block text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1.5">
-              Rough
-            </span>
-            <div className="flex gap-1.5">
-              {roughOptions.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => setRough(opt.value)}
-                  className={`flex-1 h-8 rounded-lg text-xs font-medium transition-colors ${
-                    rough === opt.value
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Tee Shot + Ground — combined row */}
-          <div className="flex gap-2">
-            <div className="flex-1 bg-card border border-border rounded-xl px-3 py-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
-                  Off the Tee
-                </span>
-                <button
-                  onClick={() => setTeed(!teed)}
-                  className={`relative w-10 h-6 rounded-full transition-colors ${
-                    teed ? "bg-primary" : "bg-secondary"
-                  }`}
-                >
-                  <span
-                    className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
-                      teed ? "translate-x-4" : "translate-x-0"
-                    }`}
-                  />
-                </button>
-              </div>
-            </div>
-            <div className="flex-1 bg-card border border-border rounded-xl p-2">
-              <span className="block text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1">
-                Ground
-              </span>
-              <div className="flex gap-1">
-                {(["dry", "soft", "rain"] as const).map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => setGround(opt)}
-                    className={`flex-1 h-7 rounded-md text-[10px] font-medium transition-colors ${
-                      ground === opt
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                    }`}
-                  >
-                    {opt === "dry" ? "Dry" : opt === "soft" ? "Soft" : "Rain"}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <button
+              onClick={() => {
+                const newTeed = !teed;
+                setTeed(newTeed);
+                if (newTeed) {
+                  setLie("flat");
+                  setLieSeverity("medium");
+                  setRough("fairway");
+                }
+              }}
+              className={`relative w-10 h-6 rounded-full transition-colors ${
+                teed ? "bg-primary" : "bg-secondary"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
+                  teed ? "translate-x-4" : "translate-x-0"
+                }`}
+              />
+            </button>
           </div>
         </div>
-      )}
+        <div className="flex-1 bg-card border border-border rounded-xl p-2">
+          <span className="block text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1">
+            Ground
+          </span>
+          <div className="flex gap-1">
+            {(["dry", "soft", "rain"] as const).map((opt) => (
+              <button
+                key={opt}
+                onClick={() => setGround(opt)}
+                className={`flex-1 h-7 rounded-md text-[10px] font-medium transition-colors ${
+                  ground === opt
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                }`}
+              >
+                {opt === "dry" ? "Dry" : opt === "soft" ? "Soft" : "Rain"}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

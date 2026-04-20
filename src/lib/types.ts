@@ -8,6 +8,7 @@ export interface Club {
   clubType: "iron" | "wood" | "hybrid" | "wedge" | "putter";
   enabled: 0 | 1;
   sortOrder: number;
+  manualDistance?: number;
   createdAt: string;
 }
 

@@ -46,6 +46,10 @@ export function calculatePDF(calibrations: Calibration[], clubs: Club[]): number
 }
 
 export function predictDistance(club: Club, pdf: number): number {
+  // Manual distance override takes priority over PDF prediction
+  if (club.manualDistance && club.manualDistance > 0) {
+    return club.manualDistance;
+  }
   return (90 - club.loft) * pdf;
 }
 

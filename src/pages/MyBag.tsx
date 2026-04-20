@@ -14,7 +14,7 @@ const CLOCK_LABELS: Record<ClockPosition, string> = {
 };
 
 export default function MyBag() {
-  const { state, addClubs, removeClub, toggleClub, clearClubs, addCalibration, removeCalibration, setClockCalibration, removeClockCalibration } = useApp();
+  const { state, addClubs, removeClub, toggleClub, clearClubs, addCalibration, removeCalibration, setClockCalibration, removeClockCalibration, setManualDistance } = useApp();
   const { clubs, calibrations, clockCalibrations } = state;
 
   const [selectedBrand, setSelectedBrand] = useState("");
@@ -548,8 +548,22 @@ export default function MyBag() {
                     <div className="text-sm font-medium truncate">{club.name}</div>
                     <div className="text-xs text-muted-foreground">
                       {club.brand} &middot; {club.loft}&deg;
-                      {stockDist > 0 && ` \u00B7 ~${stockDist} yds`}
+                      {!club.manualDistance && stockDist > 0 && ` \u00B7 ~${stockDist} yds`}
                     </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      placeholder={stockDist > 0 ? String(stockDist) : "yds"}
+                      value={club.manualDistance || ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setManualDistance(club.id, val ? parseInt(val) : undefined);
+                      }}
+                      className="w-14 h-7 bg-secondary border border-border rounded-md text-xs font-bold text-center tabular-nums focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground/30"
+                    />
+                    <span className="text-[9px] text-muted-foreground">yds</span>
                   </div>
                   <button
                     onClick={() => removeClub(club.id)}

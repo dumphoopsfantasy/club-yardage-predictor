@@ -19,6 +19,7 @@ type Action =
   | { type: "REMOVE_CALIBRATION"; id: number }
   | { type: "SET_CLOCK_CALIBRATION"; clockCal: { clubId: number; position: ClockPosition; yardage: number } }
   | { type: "REMOVE_CLOCK_CALIBRATION"; clubId: number; position: ClockPosition }
+  | { type: "SET_MANUAL_DISTANCE"; clubId: number; distance: number | undefined }
   | { type: "ADD_ROUND"; round: Omit<Round, "id" | "createdAt"> }
   | { type: "REMOVE_ROUND"; id: number }
   | { type: "ADD_SHOT"; shot: Omit<Shot, "id" | "createdAt"> }
@@ -143,6 +144,15 @@ function appReducer(state: AppState, action: Action): AppState {
           (c) => !(c.clubId === action.clubId && c.position === action.position)
         ),
       };
+    case "SET_MANUAL_DISTANCE":
+      return {
+        ...state,
+        clubs: state.clubs.map((c) =>
+          c.id === action.clubId
+            ? { ...c, manualDistance: action.distance }
+            : c
+        ),
+      };
     case "ADD_ROUND": {
       const roundId = state.rounds.length > 0 ? Math.max(...state.rounds.map((r) => r.id)) + 1 : 1;
       return {
@@ -198,6 +208,7 @@ interface AppContextType {
   removeCalibration: (id: number) => void;
   setClockCalibration: (clubId: number, position: ClockPosition, yardage: number) => void;
   removeClockCalibration: (clubId: number, position: ClockPosition) => void;
+  setManualDistance: (clubId: number, distance: number | undefined) => void;
   addRound: (round: Omit<Round, "id" | "createdAt">) => Round;
   removeRound: (id: number) => void;
   addShot: (shot: Omit<Shot, "id" | "createdAt">) => void;
@@ -252,6 +263,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "REMOVE_CLOCK_CALIBRATION", clubId, position });
   }, []);
 
+  const setManualDistance = useCallback((clubId: number, distance: number | undefined) => {
+    dispatch({ type: "SET_MANUAL_DISTANCE", clubId, distance });
+  }, []);
+
   const addRound = useCallback((round: Omit<Round, "id" | "createdAt">) => {
     dispatch({ type: "ADD_ROUND", round });
     const currentState = stateRef.current;
@@ -299,6 +314,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         removeCalibration,
         setClockCalibration,
         removeClockCalibration,
+        setManualDistance,
         addRound,
         removeRound,
         addShot,
