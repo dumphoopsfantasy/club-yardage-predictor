@@ -345,3 +345,7 @@ input:focus-visible, select:focus-visible { outline: 2px solid hsl(var(--ring));
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+.condition-section button { min-width: 44px; }
+.bag-row.opacity-40 { opacity: 1; }
+.bag-row.opacity-40 .ledger-yardage,
+.bag-row.opacity-40 .text-lg { color: hsl(var(--muted-foreground)); }
