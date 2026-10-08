@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import launchScreen from "/launch-screen.png";
+import dumpLogo from "@/assets/dump-logo-transparent.png";
 
 export default function SplashScreen({ onDone }: { onDone: () => void }) {
   const [fading, setFading] = useState(false);
@@ -15,15 +15,16 @@ export default function SplashScreen({ onDone }: { onDone: () => void }) {
 
   return (
     <div
-      className={`fixed inset-0 z-[200] flex items-center justify-center bg-white transition-opacity duration-600 ${
+      className={`splash-screen ${
         fading ? "opacity-0" : "opacity-100"
       }`}
     >
-      <img
-        src={launchScreen}
-        alt="Dump Golf"
-        className="w-full h-full object-cover"
-      />
+      <div className="splash-brand">
+        <img src={dumpLogo} alt="" className="splash-logo" />
+        <h1>Dump Golf</h1>
+        <span className="book-label">YOUR YARDAGE BOOK</span>
+        <div className="splash-rule" />
+      </div>
     </div>
   );
 }

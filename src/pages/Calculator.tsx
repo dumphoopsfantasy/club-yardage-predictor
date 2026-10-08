@@ -6,7 +6,8 @@ import {
   recommendClub,
   type EnvironmentalConditions,
 } from "@/lib/yardage-model";
-import { Wind, Thermometer, ChevronUp, ChevronDown, Loader2, RotateCcw } from "lucide-react";
+import { Wind, Thermometer, ChevronUp, ChevronDown, Loader2, RotateCcw, Flag } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import dumpLogo from "@/assets/dump-logo-transparent.png";
 
 type WindDir = EnvironmentalConditions["windDirection"];
@@ -178,33 +179,33 @@ export default function Calculator() {
   ];
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-4">
+    <div className="yardage-page calculator-page">
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="calculator-header">
         <div className="flex items-center gap-2">
           <img src={dumpLogo} alt="Dump Golf" className="h-11 w-auto" />
-          <h1 className="text-xl font-bold tracking-tight">Dump Golf</h1>
+          <div><h1 className="text-xl font-semibold">Dump Golf</h1><span className="book-label">THE YARDAGE BOOK</span></div>
         </div>
         <div className="flex items-center gap-2">
           {weatherLoading && (
             <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
           )}
           {targetDist > 0 && (
-            <button
+            <Button variant="unstyled" size="bare"
               onClick={resetShot}
               className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted-foreground bg-secondary hover:bg-secondary/80 transition-colors"
               title="New shot"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               New
-            </button>
+            </Button>
           )}
         </div>
       </div>
 
       {/* Input Mode Toggle */}
-      <div className="flex bg-card border border-border rounded-lg p-0.5 mb-3">
-        <button
+      <div className="mode-switch mb-6">
+        <Button variant="unstyled" size="bare"
           onClick={() => { setUseRangefinder(true); setElevation(0); }}
           className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors ${
             useRangefinder
@@ -213,8 +214,8 @@ export default function Calculator() {
           }`}
         >
           Rangefinder
-        </button>
-        <button
+        </Button>
+        <Button variant="unstyled" size="bare"
           onClick={() => { setUseRangefinder(false); setSlopeDistance(""); }}
           className={`flex-1 py-1.5 rounded-md text-sm font-medium transition-colors ${
             !useRangefinder
@@ -223,15 +224,15 @@ export default function Calculator() {
           }`}
         >
           Manual
-        </button>
+        </Button>
       </div>
 
       {/* Distance Input */}
       {useRangefinder ? (
         <div className="mb-3">
           <div className="flex items-stretch gap-3">
-            <div className="flex-1">
-              <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase tracking-wider">
+            <div className="flex-1 min-w-0">
+              <label className="block text-xs font-medium text-muted-foreground mb-1 uppercase tracking-normal">
                 Straight-line
               </label>
               <div className="relative">
@@ -241,17 +242,17 @@ export default function Calculator() {
                   inputMode="numeric"
                   value={slopeDistance}
                   onChange={(e) => setSlopeDistance(e.target.value)}
-                  placeholder="155"
-                  className="w-full h-12 text-2xl font-bold text-center tabular-nums bg-card border border-border rounded-xl px-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground/30"
+                  placeholder="—" aria-label="Straight-line distance"
+                  className="shot-yardage"
                 />
-                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground font-medium">
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">
                   yds
                 </span>
               </div>
-              <div className="text-[10px] text-muted-foreground mt-0.5 text-center">Laser distance</div>
+              <div className="text-xs text-muted-foreground mt-0.5 text-center">Laser distance</div>
             </div>
-            <div className="flex-1">
-              <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase tracking-wider">
+            <div className="flex-1 min-w-0">
+              <label className="block text-xs font-medium text-muted-foreground mb-1 uppercase tracking-normal">
                 Plays Like
               </label>
               <div className="relative">
@@ -261,14 +262,14 @@ export default function Calculator() {
                   inputMode="numeric"
                   value={distance}
                   onChange={(e) => setDistance(e.target.value)}
-                  placeholder="148"
-                  className="w-full h-12 text-2xl font-bold text-center tabular-nums bg-card border border-border rounded-xl px-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground/30"
+                  placeholder="—" aria-label="Plays like distance"
+                  className="shot-yardage"
                 />
-                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground font-medium">
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">
                   yds
                 </span>
               </div>
-              <div className="text-[10px] text-muted-foreground mt-0.5 text-center">Adjusted</div>
+              <div className="text-xs text-muted-foreground mt-0.5 text-center">Adjusted</div>
             </div>
           </div>
           {slopeDistance && distance && slopeDistance !== distance && (
@@ -281,7 +282,7 @@ export default function Calculator() {
       ) : (
         <>
           <div className="mb-3">
-            <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase tracking-wider">
+            <label className="block text-xs font-medium text-muted-foreground mb-1 uppercase tracking-normal">
               Distance to Pin
             </label>
             <div className="relative">
@@ -291,8 +292,8 @@ export default function Calculator() {
                 inputMode="numeric"
                 value={distance}
                 onChange={(e) => setDistance(e.target.value)}
-                placeholder="150"
-                className="w-full h-14 text-3xl font-bold text-center tabular-nums bg-card border border-border rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground/30"
+                placeholder="—" aria-label="Distance to pin"
+                className="shot-yardage manual-yardage"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
                 yds
@@ -301,26 +302,26 @@ export default function Calculator() {
           </div>
 
           {/* Elevation stepper — compact */}
-          <div className="flex items-center justify-between bg-card border border-border rounded-xl px-3 py-2 mb-3">
-            <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+          <div className="flex items-center justify-between condition-section">
+            <span className="text-xs text-muted-foreground uppercase tracking-normal font-medium">
               Elevation
             </span>
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => stepElevation(-3)}
-                className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+              <Button variant="unstyled" size="bare"
+                aria-label="Decrease elevation" onClick={() => stepElevation(-3)}
+                className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
               >
                 <ChevronDown className="w-4 h-4" />
-              </button>
+              </Button>
               <span className="text-base font-bold tabular-nums min-w-[55px] text-center">
                 {elevation > 0 ? "+" : ""}{elevation}ft
               </span>
-              <button
-                onClick={() => stepElevation(3)}
-                className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+              <Button variant="unstyled" size="bare"
+                aria-label="Increase elevation" onClick={() => stepElevation(3)}
+                className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
               >
                 <ChevronUp className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           </div>
         </>
@@ -328,13 +329,13 @@ export default function Calculator() {
 
       {/* ====== RESULT CARD — RIGHT AFTER INPUT ====== */}
       {result && targetDist > 0 && (
-        <div className="bg-card border-2 border-primary/30 rounded-2xl p-4 mb-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="shot-result animate-in fade-in duration-300">
           {activeBadges.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-2">
               {activeBadges.map((badge, i) => (
                 <span
                   key={i}
-                  className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary border border-primary/20"
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20"
                 >
                   {badge}
                 </span>
@@ -345,10 +346,10 @@ export default function Calculator() {
           <div className="flex items-center justify-between">
             {/* Plays As — left side, big number */}
             <div>
-              <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
+              <div className="text-xs text-muted-foreground uppercase tracking-normal mb-0.5">
                 Plays As
               </div>
-              <div className="text-5xl font-extrabold tabular-nums text-primary leading-none">
+              <div className="result-yardage tabular-nums">
                 {result.playsAs}
               </div>
               <div className="text-xs text-muted-foreground">yards</div>
@@ -356,8 +357,8 @@ export default function Calculator() {
 
             {/* Club recommendation — right side */}
             {result.recommended ? (
-              <div className="text-right">
-                <div className="text-2xl font-bold leading-tight">{result.recommended.label}</div>
+              <div className="text-right max-w-[45%]">
+                <div className="text-2xl font-semibold leading-tight break-words">{result.recommended.label}</div>
                 <div className="text-xs text-muted-foreground">
                   {result.recommended.yardage} yds &middot; {result.recommended.club.loft}&deg;
                 </div>
@@ -370,7 +371,7 @@ export default function Calculator() {
           </div>
 
           {result.aimOffset && (
-            <div className="text-center mt-2 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 text-xs font-medium border border-amber-500/20">
+            <div className="text-center mt-4 px-3 py-2 bg-accent/10 text-accent-foreground text-sm font-medium border border-accent/30">
               {result.aimOffset}
             </div>
           )}
@@ -378,9 +379,9 @@ export default function Calculator() {
           {result.alternatives.length > 0 && (
             <div className="flex gap-2 mt-3">
               {result.alternatives.map((alt, i) => (
-                <div key={i} className="flex-1 text-center bg-secondary/50 rounded-lg py-1.5 px-2">
+                <div key={i} className="flex-1 min-w-0 text-center border-t border-border py-3 px-2">
                   <div className="text-xs font-semibold">{alt.label}</div>
-                  <div className="text-[10px] text-muted-foreground">{alt.yardage} yds</div>
+                  <div className="text-xs text-muted-foreground">{alt.yardage} yds</div>
                 </div>
               ))}
             </div>
@@ -389,7 +390,7 @@ export default function Calculator() {
           {/* Adjustment breakdown — collapsible */}
           {result.adjustments.length > 0 && (
             <details className="mt-3 border-t border-border pt-2">
-              <summary className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium cursor-pointer select-none">
+              <summary className="text-xs text-muted-foreground uppercase tracking-normal font-medium cursor-pointer select-none">
                 Adjustments
               </summary>
               <div className="space-y-0.5 mt-1.5">
@@ -405,9 +406,9 @@ export default function Calculator() {
                     <span
                       className={`tabular-nums font-medium ${
                         adj.yards > 0
-                          ? "text-red-400"
+                          ? "text-destructive"
                           : adj.yards < 0
-                            ? "text-emerald-400"
+                            ? "text-primary"
                             : ""
                       }`}
                     >
@@ -427,44 +428,41 @@ export default function Calculator() {
       )}
 
       {targetDist === 0 && (
-        <div className="text-center py-8 text-muted-foreground">
-          <div className="text-4xl mb-2 opacity-30">&#9971;</div>
-          <p className="text-sm">Enter your distance to get started</p>
-          {enabledClubs.length === 0 && (
-            <p className="text-xs mt-1 text-muted-foreground/60">
-              Set up your clubs in My Bag for personalized recommendations
-            </p>
-          )}
+        <div className="empty-shot">
+          <Flag className="h-8 w-8 mx-auto mb-3 text-primary" strokeWidth={1.25} />
+          <p className="text-lg font-medium text-foreground">Distance to the flag</p>
+
         </div>
       )}
 
       {/* ====== CONDITIONS — BELOW THE RESULT ====== */}
 
+      <h2 className="section-title">Course conditions</h2>
       {/* Wind — compact single row */}
-      <div className="bg-card border border-border rounded-xl px-3 py-2 mb-2">
+      <div className="condition-section">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Wind className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+            <span className="text-xs text-muted-foreground uppercase tracking-normal font-medium">
               Wind
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setWindSpeed(Math.max(0, windSpeed - 1))}
-              className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+            <Button variant="unstyled" size="bare"
+              aria-label="Decrease wind speed" onClick={() => setWindSpeed(Math.max(0, windSpeed - 1))}
+              className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
             >
               <ChevronDown className="w-3.5 h-3.5" />
-            </button>
+            </Button>
             <span className="text-sm font-bold tabular-nums min-w-[42px] text-center">
               {windSpeed}mph
             </span>
-            <button
-              onClick={() => setWindSpeed(windSpeed + 1)}
-              className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+            <Button variant="unstyled" size="bare"
+              aria-label="Increase wind speed" onClick={() => setWindSpeed(windSpeed + 1)}
+              className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
             >
               <ChevronUp className="w-3.5 h-3.5" />
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -472,118 +470,118 @@ export default function Calculator() {
         {windSpeed > 0 && (
           <div className="flex gap-1.5 mt-2">
             {windDirOptions.map((opt) => (
-              <button
+              <Button variant="unstyled" size="bare"
                 key={opt.value}
                 onClick={() => setWindDirection(opt.value)}
-                className={`flex-1 h-8 rounded-lg text-xs font-medium transition-colors ${
+                className={`flex-1 h-11 rounded-md text-xs font-medium transition-colors ${
                   windDirection === opt.value
                     ? "bg-primary text-primary-foreground"
                     : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 }`}
               >
                 {opt.label}
-              </button>
+              </Button>
             ))}
           </div>
         )}
       </div>
 
       {/* Temperature */}
-      <div className="flex items-center justify-between bg-card border border-border rounded-xl px-3 py-2 mb-2">
+      <div className="flex items-center justify-between condition-section">
         <div className="flex items-center gap-1.5">
           <Thermometer className="w-3.5 h-3.5 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+          <span className="text-xs text-muted-foreground uppercase tracking-normal font-medium">
             Temp
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          <button
-            onClick={() => setTemperature(temperature - 5)}
-            className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+          <Button variant="unstyled" size="bare"
+            aria-label="Decrease temperature" onClick={() => setTemperature(temperature - 5)}
+            className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
           >
             <ChevronDown className="w-3.5 h-3.5" />
-          </button>
+          </Button>
           <span className="text-sm font-bold tabular-nums min-w-[42px] text-center">
             {temperature}&deg;F
           </span>
-          <button
-            onClick={() => setTemperature(temperature + 5)}
-            className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+          <Button variant="unstyled" size="bare"
+            aria-label="Increase temperature" onClick={() => setTemperature(temperature + 5)}
+            className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
           >
             <ChevronUp className="w-3.5 h-3.5" />
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Lie */}
-      <div className="bg-card border border-border rounded-xl p-3 mb-2">
-        <span className="block text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1.5">
+      <div className="condition-section">
+        <span className="block text-xs text-muted-foreground uppercase tracking-normal font-medium mb-1.5">
           Lie
         </span>
         <div className="flex flex-wrap gap-1.5">
           {lieOptions.map((opt) => (
-            <button
+            <Button variant="unstyled" size="bare"
               key={opt.value}
               onClick={() => setLie(opt.value)}
-              className={`h-8 px-2.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`h-11 px-2.5 rounded-lg text-xs font-medium transition-colors ${
                 lie === opt.value
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
               }`}
             >
               {opt.label}
-            </button>
+            </Button>
           ))}
         </div>
         {lie !== "flat" && (
           <div className="flex gap-1.5 mt-1.5">
             {(["slight", "medium", "severe"] as LieSeverity[]).map((sev) => (
-              <button
+              <Button variant="unstyled" size="bare"
                 key={sev}
                 onClick={() => setLieSeverity(sev)}
-                className={`flex-1 h-7 rounded-lg text-[10px] font-medium transition-colors capitalize ${
+                className={`flex-1 h-11 rounded-md text-xs font-medium transition-colors capitalize ${
                   lieSeverity === sev
                     ? "bg-primary/20 text-primary border border-primary/30"
                     : "bg-secondary text-muted-foreground hover:bg-secondary/80"
                 }`}
               >
                 {sev}
-              </button>
+              </Button>
             ))}
           </div>
         )}
       </div>
 
       {/* Rough */}
-      <div className="bg-card border border-border rounded-xl p-3 mb-2">
-        <span className="block text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1.5">
+      <div className="condition-section">
+        <span className="block text-xs text-muted-foreground uppercase tracking-normal font-medium mb-1.5">
           Rough
         </span>
         <div className="flex gap-1.5">
           {roughOptions.map((opt) => (
-            <button
+            <Button variant="unstyled" size="bare"
               key={opt.value}
               onClick={() => setRough(opt.value)}
-              className={`flex-1 h-8 rounded-lg text-xs font-medium transition-colors ${
+              className={`flex-1 h-11 rounded-md text-xs font-medium transition-colors ${
                 rough === opt.value
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
               }`}
             >
               {opt.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
 
       {/* Tee Shot + Ground — combined row */}
-      <div className="flex gap-2 mb-4">
-        <div className="flex-1 bg-card border border-border rounded-xl px-3 py-2">
+      <div className="ground-section">
+        <div className="condition-section">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
+            <span className="text-xs text-muted-foreground uppercase tracking-normal font-medium">
               Off the Tee
             </span>
-            <button
+            <Button variant="unstyled" size="bare"
               onClick={() => {
                 const newTeed = !teed;
                 setTeed(newTeed);
@@ -593,35 +591,35 @@ export default function Calculator() {
                   setRough("fairway");
                 }
               }}
-              className={`relative w-10 h-6 rounded-full transition-colors ${
+              aria-label="Off the tee" aria-pressed={teed} className={`relative w-12 h-11 rounded-full transition-colors ${
                 teed ? "bg-primary" : "bg-secondary"
               }`}
             >
               <span
-                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
-                  teed ? "translate-x-4" : "translate-x-0"
+                className={`absolute top-3 left-1 w-5 h-5 rounded-full bg-primary-foreground transition-transform ${
+                  teed ? "translate-x-5" : "translate-x-0"
                 }`}
               />
-            </button>
+            </Button>
           </div>
         </div>
-        <div className="flex-1 bg-card border border-border rounded-xl p-2">
-          <span className="block text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-1">
+        <div className="condition-section">
+          <span className="block text-xs text-muted-foreground uppercase tracking-normal font-medium mb-1">
             Ground
           </span>
           <div className="flex gap-1">
             {(["dry", "soft", "rain"] as const).map((opt) => (
-              <button
+              <Button variant="unstyled" size="bare"
                 key={opt}
                 onClick={() => setGround(opt)}
-                className={`flex-1 h-7 rounded-md text-[10px] font-medium transition-colors ${
+                className={`flex-1 h-11 rounded-md text-xs font-medium transition-colors ${
                   ground === opt
                     ? "bg-primary text-primary-foreground"
                     : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 }`}
               >
                 {opt === "dry" ? "Dry" : opt === "soft" ? "Soft" : "Rain"}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

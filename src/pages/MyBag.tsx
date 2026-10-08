@@ -2,8 +2,10 @@ import { useState, useMemo } from "react";
 import { useApp } from "@/context/AppContext";
 import { getBrands, getModels, getClubsForModel } from "@/lib/club-catalog";
 import { calculatePDF, predictDistance } from "@/lib/yardage-model";
-import { Plus, Trash2, Check, X, Target, Clock } from "lucide-react";
+import { Plus, Trash2, Check, X, Target, Clock, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import ClubPicker from "@/components/ClubPicker";
 import type { ClockPosition } from "@/lib/types";
 
 const CLOCK_POSITIONS: ClockPosition[] = ["7:30", "9:00", "10:30"];
@@ -132,20 +134,20 @@ export default function MyBag() {
   }, [models]);
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-4">
-      <h1 className="text-xl font-bold tracking-tight mb-4">My Bag</h1>
+    <div className="yardage-page bag-page">
+      <header className="page-heading"><div><span className="book-label">YOUR YARDAGE BOOK</span><h1>My Bag</h1></div><span className="page-count tabular-nums">{clubs.length < 10 ? `0${clubs.length}` : clubs.length}<span>clubs</span></span></header>
 
       {/* Calibration Section — always visible near top */}
       {clubs.length > 0 && (
-        <div className="bg-card border border-border rounded-xl p-4 mb-4">
+        <div className="book-section">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Target className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold">Calibration</span>
+              <span className="text-sm font-semibold">Known carry</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1.5">
-                <div className="w-16 h-1.5 bg-secondary rounded-full overflow-hidden">
+                <div className="hidden">
                   <div
                     className="h-full bg-primary rounded-full transition-all"
                     style={{ width: `${Math.min(100, calibrations.length * 20)}%` }}
@@ -161,11 +163,7 @@ export default function MyBag() {
             </div>
           </div>
 
-          {calibrations.length === 0 && (
-            <p className="text-xs text-muted-foreground mb-3">
-              Enter known distances to personalize your yardages. Hit a few clubs at the range, enter what you carry.
-            </p>
-          )}
+
 
           {calibrations.length > 0 && (
             <div className="space-y-1 mb-3">
@@ -179,12 +177,12 @@ export default function MyBag() {
                     <span className="text-sm">
                       {club?.name || "Unknown"}: {cal.yardage} yds
                     </span>
-                    <button
+                    <Button variant="unstyled" size="bare"
                       onClick={() => removeCalibration(cal.id)}
-                      className="text-muted-foreground hover:text-destructive"
+                      aria-label="Remove calibration" className="text-muted-foreground hover:text-destructive"
                     >
                       <X className="w-3.5 h-3.5" />
-                    </button>
+                    </Button>
                   </div>
                 );
               })}
@@ -192,13 +190,13 @@ export default function MyBag() {
           )}
 
           {calibrations.length < 5 && (
-            <div className="flex gap-2">
+            <div className="calibration-entry">
               <select
                 value={calClubId || ""}
                 onChange={(e) => setCalClubId(e.target.value ? Number(e.target.value) : null)}
-                className="flex-1 h-10 bg-secondary rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                aria-label="Known carry club" className="calibration-club"
               >
-                <option value="">Select club...</option>
+                <option value="">Choose club</option>
                 {clubs
                   .filter((c) => c.enabled)
                   .map((c) => (
@@ -207,26 +205,96 @@ export default function MyBag() {
               </select>
               <input
                 type="number"
-                placeholder="Yds"
+                placeholder="—" aria-label="Known carry yardage" inputMode="numeric"
                 value={calYardage}
                 onChange={(e) => setCalYardage(e.target.value)}
-                className="w-20 h-10 bg-secondary rounded-lg px-3 text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary"
+                className="calibration-yardage"
               />
-              <button
+              <Button variant="unstyled" size="bare"
                 onClick={handleAddCalibration}
                 disabled={!calClubId || !calYardage}
-                className="h-10 px-3 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                aria-label="Save known carry" className="calibration-save"
               >
                 <Plus className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           )}
         </div>
       )}
 
+      {/* Club List */}
+      {clubs.length > 0 && (
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm font-semibold">Predicted bag <span className="text-muted-foreground font-normal">/ {clubs.length}</span></h2>
+            <Button variant="unstyled" size="bare"
+              onClick={() => {
+                clearClubs();
+                toast.success("Bag cleared");
+              }}
+              className="text-xs text-destructive hover:text-destructive/80 transition-colors"
+            >
+              Clear all
+            </Button>
+          </div>
+          <div className="bag-ledger">
+            {clubs.map((club) => {
+              const stockDist = Math.round(predictDistance(club, pdf));
+              return (
+                <div
+                  key={club.id}
+                  className={`bag-row ${
+                    club.enabled ? "" : "opacity-40"
+                  }`}
+                >
+                  <Button variant="unstyled" size="bare"
+                    onClick={() => toggleClub(club.id)}
+                    aria-label={`Include ${club.name}`} aria-pressed={!!club.enabled} className={`club-enabled ${
+                      club.enabled
+                        ? "bg-primary border-primary text-primary-foreground"
+                        : "border-border"
+                    }`}
+                  >
+                    {club.enabled ? <Check className="w-3 h-3" /> : null}
+                  </Button>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-lg font-medium">{club.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {club.brand} &middot; {club.loft}&deg;
+
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      placeholder={stockDist > 0 ? String(stockDist) : "yds"}
+                      value={club.manualDistance || ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setManualDistance(club.id, val ? parseInt(val) : undefined);
+                      }}
+                      aria-label={`${club.name} carry yardage`} className="ledger-yardage"
+                    />
+                    <span className="text-xs text-muted-foreground">yds</span>
+                  </div>
+                  <Button variant="unstyled" size="bare"
+                    onClick={() => removeClub(club.id)}
+                    aria-label={`Remove ${club.name}`} className="w-11 h-11 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <h2 className="section-title">Add to your bag</h2>
       {/* Mode Toggle */}
-      <div className="flex gap-2 mb-4">
-        <button
+      <div className="mode-switch mb-6">
+        <Button variant="unstyled" size="bare"
           onClick={() => setBagMode("full")}
           className={`flex-1 h-11 rounded-lg text-sm font-medium transition-colors ${
             bagMode === "full"
@@ -235,8 +303,8 @@ export default function MyBag() {
           }`}
         >
           Full Set
-        </button>
-        <button
+        </Button>
+        <Button variant="unstyled" size="bare"
           onClick={() => setBagMode("mixed")}
           className={`flex-1 h-11 rounded-lg text-sm font-medium transition-colors ${
             bagMode === "mixed"
@@ -245,76 +313,22 @@ export default function MyBag() {
           }`}
         >
           Mixed Bag
-        </button>
+        </Button>
       </div>
 
-      {/* Brand Selector */}
-      <div className="space-y-3 mb-4">
-        <div>
-          <label className="block text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1.5">
-            Brand
-          </label>
-          <select
-            value={selectedBrand}
-            onChange={(e) => {
-              setSelectedBrand(e.target.value);
-              setSelectedModel("");
-              setSelectedVariant(undefined);
-            }}
-            className="w-full h-11 bg-card border border-border rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          >
-            <option value="">Select brand...</option>
-            {brands.map((b) => (
-              <option key={b} value={b}>{b}</option>
-            ))}
-          </select>
+      {/* Catalog selection */}
+      <section className="catalog-select mb-6">
+        <span className="book-label">MANUFACTURER</span>
+        <div className="brand-grid">
+          {brands.map(b => <Button key={b} variant="unstyled" size="bare" aria-pressed={selectedBrand === b} onClick={() => { setSelectedBrand(b); setSelectedModel(""); setSelectedVariant(undefined); }} className={`brand-choice ${selectedBrand === b ? "is-selected" : ""}`}>{b}</Button>)}
         </div>
-
-        {selectedBrand && (
-          <div>
-            <label className="block text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1.5">
-              Model
-            </label>
-            <select
-              value={selectedModel}
-              onChange={(e) => {
-                setSelectedModel(e.target.value);
-                setSelectedVariant(undefined);
-              }}
-              className="w-full h-11 bg-card border border-border rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="">Select model...</option>
-              {uniqueModelOptions.map((m, i) => (
-                <option key={i} value={`${m.model} (${m.year})`}>
-                  {m.model} ({m.year})
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {availableVariants.length > 0 && (
-          <div>
-            <label className="block text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1.5">
-              Variant
-            </label>
-            <select
-              value={selectedVariant || ""}
-              onChange={(e) => setSelectedVariant(e.target.value || undefined)}
-              className="w-full h-11 bg-card border border-border rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="">Standard</option>
-              {availableVariants.map((v) => (
-                <option key={v} value={v}>{v}</option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
+        {selectedBrand && <ClubPicker label="Model" value={selectedModel} options={uniqueModelOptions.map(m => `${m.model} (${m.year})`)} onChange={value => { setSelectedModel(value); setSelectedVariant(undefined); }} />}
+        {availableVariants.length > 0 && <ClubPicker label="Loft specification" value={selectedVariant || "Standard"} options={["Standard", ...availableVariants]} onChange={value => setSelectedVariant(value === "Standard" ? undefined : value)} />}
+      </section>
 
       {/* Catalog Preview */}
       {catalogEntry && (
-        <div className="bg-card border border-border rounded-xl p-4 mb-4">
+        <div className="book-section">
           <div className="flex items-center justify-between mb-3">
             <div>
               <div className="font-semibold text-sm">
@@ -328,43 +342,43 @@ export default function MyBag() {
               </div>
             </div>
             {bagMode === "full" && (
-              <button
+              <Button variant="unstyled" size="bare"
                 onClick={handleAddSet}
-                className="h-9 px-4 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5"
+                className="h-11 px-4 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Add Set
-              </button>
+              </Button>
             )}
           </div>
           <div className="grid grid-cols-2 gap-1.5">
             {catalogEntry.clubs.map((c, i) => (
-              <div
+              <Button variant="unstyled" size="bare"
                 key={i}
-                className={`flex items-center justify-between bg-secondary/50 rounded-lg px-3 py-2 ${
+                className={`flex min-h-11 items-center justify-between border-b border-border px-1 py-2 ${
                   bagMode === "mixed" ? "cursor-pointer hover:bg-secondary" : ""
                 }`}
                 onClick={() => bagMode === "mixed" && handleAddSingle(c)}
               >
                 <span className="text-sm font-medium">{c.name}</span>
                 <span className="text-xs text-muted-foreground tabular-nums">{c.loft}&deg;</span>
-              </div>
+              </Button>
             ))}
           </div>
         </div>
       )}
 
       {/* Add Custom Club */}
-      <button
+      <Button variant="unstyled" size="bare"
         onClick={() => setShowCustom(!showCustom)}
         className="w-full flex items-center justify-center gap-1.5 py-2 mb-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
       >
         <Plus className="w-3 h-3" />
         Add custom club
-      </button>
+      </Button>
 
       {showCustom && (
-        <div className="bg-card border border-border rounded-xl p-4 mb-4 space-y-3">
+        <div className="book-section space-y-3">
           <input
             type="text"
             placeholder="Club name (e.g., 3 Wood)"
@@ -391,26 +405,24 @@ export default function MyBag() {
               <option value="wedge">Wedge</option>
             </select>
           </div>
-          <button
+          <Button variant="unstyled" size="bare"
             onClick={handleAddCustom}
             disabled={!customName || !customLoft}
             className="w-full h-11 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
           >
             Add Custom Club
-          </button>
+          </Button>
         </div>
       )}
 
       {/* Wedge Clock Calibration */}
       {clubs.filter((c) => c.clubType === "wedge" && c.enabled).length > 0 && (
-        <div className="bg-card border border-border rounded-xl p-4 mb-4">
+        <div className="book-section">
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-4 h-4 text-primary" />
             <span className="text-sm font-semibold">Wedge Clock System</span>
           </div>
-          <p className="text-xs text-muted-foreground mb-3">
-            Set yardages for each swing position on your wedges. Hit each position at the range and enter what you carry.
-          </p>
+
           <div className="space-y-2">
             {clubs
               .filter((c) => c.clubType === "wedge" && c.enabled)
@@ -419,7 +431,7 @@ export default function MyBag() {
                 const isEditing = clockEditClub === club.id;
                 return (
                   <div key={club.id} className="bg-secondary/30 rounded-lg p-3">
-                    <button
+                    <Button variant="unstyled" size="bare"
                       onClick={() => {
                         if (isEditing) {
                           setClockEditClub(null);
@@ -439,7 +451,7 @@ export default function MyBag() {
                       <span className="text-sm font-medium">{club.name}</span>
                       <div className="flex items-center gap-2">
                         {clubClocks.length > 0 && !isEditing && (
-                          <span className="text-[10px] text-muted-foreground">
+                          <span className="text-xs text-muted-foreground">
                             {clubClocks.length}/{CLOCK_POSITIONS.length} set
                           </span>
                         )}
@@ -447,14 +459,14 @@ export default function MyBag() {
                           {isEditing ? "Done" : "Edit"}
                         </span>
                       </div>
-                    </button>
+                    </Button>
 
                     {/* Clock position grid when editing */}
                     {isEditing && (
                       <div className="grid grid-cols-3 gap-2 mt-3">
                         {CLOCK_POSITIONS.map((pos) => (
                           <div key={pos} className="text-center">
-                            <div className="text-[10px] text-muted-foreground font-medium mb-1">
+                            <div className="text-xs text-muted-foreground font-medium mb-1">
                               {CLOCK_LABELS[pos]}
                             </div>
                             <input
@@ -471,9 +483,9 @@ export default function MyBag() {
                                   removeClockCalibration(club.id, pos);
                                 }
                               }}
-                              className="w-full h-9 bg-card border border-border rounded-lg text-sm font-bold text-center tabular-nums focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                              className="w-full h-11 bg-card border border-border rounded-lg text-sm font-bold text-center tabular-nums focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                             />
-                            <div className="text-[9px] text-muted-foreground mt-0.5">yds</div>
+                            <div className="text-xs text-muted-foreground mt-0.5">yds</div>
                           </div>
                         ))}
                       </div>
@@ -491,7 +503,7 @@ export default function MyBag() {
                                 cc ? "bg-primary/10 border border-primary/20" : "bg-secondary/50"
                               }`}
                             >
-                              <div className="text-[9px] text-muted-foreground">{CLOCK_LABELS[pos]}</div>
+                              <div className="text-xs text-muted-foreground">{CLOCK_LABELS[pos]}</div>
                               <div className={`text-xs font-bold tabular-nums ${
                                 cc ? "text-primary" : "text-muted-foreground/30"
                               }`}>
@@ -509,83 +521,12 @@ export default function MyBag() {
         </div>
       )}
 
-      {/* Club List */}
-      {clubs.length > 0 && (
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-semibold">My Clubs ({clubs.length})</h2>
-            <button
-              onClick={() => {
-                clearClubs();
-                toast.success("Bag cleared");
-              }}
-              className="text-xs text-destructive hover:text-destructive/80 transition-colors"
-            >
-              Clear all
-            </button>
-          </div>
-          <div className="space-y-1.5">
-            {clubs.map((club) => {
-              const stockDist = Math.round(predictDistance(club, pdf));
-              return (
-                <div
-                  key={club.id}
-                  className={`flex items-center gap-3 bg-card border border-border rounded-lg px-3 py-2.5 transition-opacity ${
-                    club.enabled ? "" : "opacity-40"
-                  }`}
-                >
-                  <button
-                    onClick={() => toggleClub(club.id)}
-                    className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${
-                      club.enabled
-                        ? "bg-primary border-primary text-primary-foreground"
-                        : "border-border"
-                    }`}
-                  >
-                    {club.enabled ? <Check className="w-3 h-3" /> : null}
-                  </button>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{club.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {club.brand} &middot; {club.loft}&deg;
-                      {!club.manualDistance && stockDist > 0 && ` \u00B7 ~${stockDist} yds`}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <input
-                      type="number"
-                      inputMode="numeric"
-                      placeholder={stockDist > 0 ? String(stockDist) : "yds"}
-                      value={club.manualDistance || ""}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setManualDistance(club.id, val ? parseInt(val) : undefined);
-                      }}
-                      className="w-14 h-7 bg-secondary border border-border rounded-md text-xs font-bold text-center tabular-nums focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground/30"
-                    />
-                    <span className="text-[9px] text-muted-foreground">yds</span>
-                  </div>
-                  <button
-                    onClick={() => removeClub(club.id)}
-                    className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
       {/* Empty State */}
       {clubs.length === 0 && (
         <div className="text-center py-8 text-muted-foreground">
-          <div className="text-3xl mb-2 opacity-30">&#127948;</div>
+          <ShoppingBag className="w-10 h-10 mx-auto mb-4 text-primary" />
           <p className="text-sm">Your bag is empty</p>
-          <p className="text-xs mt-1 text-muted-foreground/60">
-            Select a brand and model above to add clubs
-          </p>
+          
         </div>
       )}
 

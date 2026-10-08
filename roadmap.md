@@ -1,0 +1,3 @@
+- [x] Redesign the visual system, calculator, club picking, calibration, predicted bag, and splash without changing calculations.
+- [x] Verify the full club-to-prediction flow and all themes at iPhone and desktop widths.
+- [x] Record short before/after design decisions.

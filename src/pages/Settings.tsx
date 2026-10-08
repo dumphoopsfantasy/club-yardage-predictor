@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useApp } from "@/context/AppContext";
 import { Sun, Moon, TreePine, Download, Upload, Trash2, AlertTriangle, HelpCircle, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export default function Settings() {
@@ -66,18 +67,18 @@ export default function Settings() {
   ];
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-4">
-      <h1 className="text-xl font-bold tracking-tight mb-6">Settings</h1>
+    <div className="yardage-page settings-page">
+      <header className="page-heading"><div><span className="book-label">MAKE IT YOURS</span><h1>Settings</h1></div></header>
 
       <div className="space-y-4">
         {/* Theme */}
-        <div className="bg-card border border-border rounded-xl p-4">
+        <div className="book-section">
           <div className="text-sm font-semibold mb-3">Theme</div>
           <div className="flex gap-2">
             {themes.map((t) => {
-              const Icon = t.icon;
+              
               return (
-                <button
+                <Button variant="unstyled" size="bare"
                   key={t.id}
                   onClick={() => handleThemeChange(t.id)}
                   className={`flex-1 h-11 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
@@ -86,19 +87,19 @@ export default function Settings() {
                       : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <span className={`theme-swatch swatch-${t.id}`} aria-hidden="true" />
                   {t.label}
-                </button>
+                </Button>
               );
             })}
           </div>
         </div>
 
         {/* Units */}
-        <div className="bg-card border border-border rounded-xl p-4">
+        <div className="book-section">
           <div className="text-sm font-semibold mb-3">Distance Units</div>
           <div className="flex gap-2">
-            <button
+            <Button variant="unstyled" size="bare"
               onClick={() => updateSettings({ units: "yards" })}
               className={`flex-1 h-11 rounded-lg text-sm font-medium transition-colors ${
                 settings.units === "yards"
@@ -107,8 +108,8 @@ export default function Settings() {
               }`}
             >
               Yards
-            </button>
-            <button
+            </Button>
+            <Button variant="unstyled" size="bare"
               onClick={() => updateSettings({ units: "meters" })}
               className={`flex-1 h-11 rounded-lg text-sm font-medium transition-colors ${
                 settings.units === "meters"
@@ -117,15 +118,15 @@ export default function Settings() {
               }`}
             >
               Meters
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Temperature */}
-        <div className="bg-card border border-border rounded-xl p-4">
+        <div className="book-section">
           <div className="text-sm font-semibold mb-3">Temperature</div>
           <div className="flex gap-2">
-            <button
+            <Button variant="unstyled" size="bare"
               onClick={() => updateSettings({ tempUnit: "fahrenheit" })}
               className={`flex-1 h-11 rounded-lg text-sm font-medium transition-colors ${
                 settings.tempUnit === "fahrenheit"
@@ -134,8 +135,8 @@ export default function Settings() {
               }`}
             >
               &deg;F
-            </button>
-            <button
+            </Button>
+            <Button variant="unstyled" size="bare"
               onClick={() => updateSettings({ tempUnit: "celsius" })}
               className={`flex-1 h-11 rounded-lg text-sm font-medium transition-colors ${
                 settings.tempUnit === "celsius"
@@ -144,28 +145,28 @@ export default function Settings() {
               }`}
             >
               &deg;C
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Data Management */}
-        <div className="bg-card border border-border rounded-xl p-4">
+        <div className="book-section">
           <div className="text-sm font-semibold mb-3">Data Management</div>
           <div className="space-y-2">
-            <button
+            <Button variant="unstyled" size="bare"
               onClick={handleExport}
               className="w-full h-11 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:bg-secondary/80 transition-colors flex items-center justify-center gap-2"
             >
               <Download className="w-4 h-4" />
               Export All Data
-            </button>
-            <button
+            </Button>
+            <Button variant="unstyled" size="bare"
               onClick={() => fileInputRef.current?.click()}
               className="w-full h-11 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:bg-secondary/80 transition-colors flex items-center justify-center gap-2"
             >
               <Upload className="w-4 h-4" />
               Import Data
-            </button>
+            </Button>
             <input
               ref={fileInputRef}
               type="file"
@@ -177,19 +178,19 @@ export default function Settings() {
         </div>
 
         {/* Reset */}
-        <div className="bg-card border border-destructive/20 rounded-xl p-4">
+        <div className="book-section">
           <div className="text-sm font-semibold mb-1 text-destructive">Danger Zone</div>
           <p className="text-xs text-muted-foreground mb-3">
             This will permanently delete all your clubs, calibrations, rounds, and settings.
           </p>
           {!showResetConfirm ? (
-            <button
+            <Button variant="unstyled" size="bare"
               onClick={() => setShowResetConfirm(true)}
               className="w-full h-11 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg text-sm font-medium hover:bg-destructive/20 transition-colors flex items-center justify-center gap-2"
             >
               <Trash2 className="w-4 h-4" />
               Reset All Data
-            </button>
+            </Button>
           ) : (
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs text-destructive">
@@ -197,35 +198,35 @@ export default function Settings() {
                 Are you sure? This cannot be undone.
               </div>
               <div className="flex gap-2">
-                <button
+                <Button variant="unstyled" size="bare"
                   onClick={() => setShowResetConfirm(false)}
                   className="flex-1 h-11 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:bg-secondary/80 transition-colors"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button variant="unstyled" size="bare"
                   onClick={handleReset}
                   className="flex-1 h-11 bg-destructive text-destructive-foreground rounded-lg text-sm font-bold hover:bg-destructive/90 transition-colors"
                 >
                   Yes, Reset
-                </button>
+                </Button>
               </div>
             </div>
           )}
         </div>
 
         {/* How to Use */}
-        <div className="bg-card border border-border rounded-xl p-4">
-          <button
+        <div className="book-section">
+          <Button variant="unstyled" size="bare"
             onClick={() => setShowHowTo(true)}
             className="w-full h-11 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:bg-secondary/80 transition-colors flex items-center justify-center gap-2"
           >
             <HelpCircle className="w-4 h-4" />
             How to Use This App
-          </button>
+          </Button>
         </div>
 
-        <div className="text-center py-4 text-xs text-muted-foreground/50">
+        <div className="text-center py-4 text-xs text-muted-foreground">
           Dump Golf v1.0.0
         </div>
       </div>
@@ -236,12 +237,12 @@ export default function Settings() {
           <div className="max-w-lg mx-auto px-4 py-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold">How to Use Dump Golf</h2>
-              <button
+              <Button variant="unstyled" size="bare"
                 onClick={() => setShowHowTo(false)}
-                className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80"
+                className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-6">
@@ -293,12 +294,12 @@ export default function Settings() {
               </div>
             </div>
 
-            <button
+            <Button variant="unstyled" size="bare"
               onClick={() => setShowHowTo(false)}
               className="w-full h-12 mt-8 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors"
             >
               Got It
-            </button>
+            </Button>
           </div>
         </div>
       )}

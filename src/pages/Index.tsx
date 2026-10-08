@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { useApp } from "@/context/AppContext";
 import Calculator from "@/pages/Calculator";
@@ -26,30 +27,30 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Screen content */}
-      <main className="flex-1 pb-20">
+      <main className="flex-1 pb-24">
         <div className={activeTab === "calculator" ? "" : "hidden"}><Calculator /></div>
         <div className={activeTab === "bag" ? "" : "hidden"}><MyBag /></div>
         <div className={activeTab === "settings" ? "" : "hidden"}><Settings /></div>
       </main>
 
       {/* Bottom tab bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+      <nav className="book-nav">
         <div className="max-w-lg mx-auto flex">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
-              <button
+              <Button variant="unstyled" size="bare"
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex flex-col items-center gap-1 py-3 transition-colors ${
+                aria-current={activeTab === tab.id ? "page" : undefined} onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 flex flex-col items-center gap-1 py-3 rounded-none transition-colors ${
                   activeTab === tab.id
                     ? "text-primary"
                     : "text-muted-foreground"
                 }`}
               >
                 <Icon className="h-6 w-6" />
-                <span className="text-xs font-semibold">{tab.label}</span>
-              </button>
+                <span className="text-xs font-medium">{tab.label}</span>
+              </Button>
             );
           })}
         </div>
